@@ -126,7 +126,6 @@ client.on("interactionCreate", async (interaction): Promise<any> => {
         const context = new ButtonContext(client, interaction, member, connection)
         if(command.staffOnly && !member?.roles.cache.has(process.env["STAFF_ROLE_ID"]!)) return context.error("You are not staff")
         command.run(context).catch(console.error)
-
     }
 })
 
