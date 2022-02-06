@@ -19,7 +19,7 @@ export class ButtonContext extends BaseContext{
     }
 
     async editReply(options: (InteractionReplyOptions)) {
-        return await this.interaction.reply(options)
+        return await this.interaction.editReply(options)
     }
 
     async deferReply(options: (InteractionDeferReplyOptions)) {

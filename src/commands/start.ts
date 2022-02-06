@@ -67,12 +67,12 @@ export default class Test extends Command {
         if(!/^https:\/\/cdn\.discordapp\.com\/attachments\/[0-9]{16,20}\/[0-9]{16,20}\/[\S]+\.txt$/.test(ctx.arguments.get("prize_attachment_url")?.value?.toString() ?? "")) return ctx.error("That's not a valid attachment url")
         let prizes = await request(ctx.arguments.get("prize_attachment_url")?.value?.toString()!, "GET").send().then(res => {
             if(res.statusCode !== 200) return []
-            return res.body.toString().split("\n")
+            return res.body.toString().split("\r\n")
         })
 
         if(!prizes.length) return ctx.error("That's not a valid attachment url")
 
-        if(prizes.length > 1 && prizes.length !== winners) return ctx.error("When giving more than one prize the number of prizes must match the number of winners")
+        if(prizes.length > 1 && prizes.length !== winners) return ctx.error(`When giving more than one prize the number of prizes must match the number of winners (${prizes.length})`)
     
         let embed = new MessageEmbed()
         .setColor("AQUA")

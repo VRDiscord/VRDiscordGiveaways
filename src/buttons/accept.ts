@@ -13,6 +13,6 @@ export default class Test extends Button {
     }
     async run(ctx: ButtonContext): Promise<any> {
         let prize = await ctx.sql.query(`DELETE FROM prizes WHERE user_id='${ctx.interaction.user.id}' AND id='${ctx.customId.split("_")[1]}' RETURNING *`)
-        ctx.update({content: `Here's your prize: ${prize.rows[0].prize}`, components: []})
+        ctx.update({content: `Here's your prize: ${prize.rows[0].prize}`, components: [], embeds: []})
     }
 }

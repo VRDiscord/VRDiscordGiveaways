@@ -15,14 +15,19 @@ export default class Test extends Button {
         let giveaway = await ctx.sql.query(`SELECT * FROM giveaways WHERE id='${ctx.customId.split("_")[1]}'`)
         let alreadywon = await ctx.sql.query(`SELECT * FROM prizes WHERE id='${ctx.customId.split("_")[1]}'`)
         let users = giveaway.rows[0].users.filter((u: string) => alreadywon.rows[0].find((r: {user_id: string}) => r.user_id === u)).sort(() => Math.random() > 0.5 ? -1 : 1)
+        console.log(users)
         if(!users.length) {
 
-            ctx.update({content: `Thanks for participating`, components: []})
-            //no users left to reroll
+            ctx.update({content: `Thanks for participating`, components: [], embeds: []})
+
+            let result = new MessageEmbed()
+            .setColor("AQUA")
+            .setTitle("User denied prize and no other users to reroll to were found.\n\n**Key**: " + alreadywon.rows.find(r => r.user_id === ctx.interaction.user.id))
+            ctx.log(result)
             return
         }
         let prize = await ctx.sql.query(`UPDATE prizes SET user_id='${users[0]}' WHERE user_id='${ctx.interaction.user.id}' AND id='${ctx.customId.split("_")[1]}' RETURNING *`)
-        ctx.update({content: `The prize has been rerolled. Thanks for participating`, components: []})
+        ctx.update({content: `The prize has been rerolled. Thanks for participating`, components: [], embeds: []})
 
         
         let embed = new MessageEmbed()

@@ -1,6 +1,6 @@
 import { GiveawayClient } from "../classes/client";
 import pg from "pg"
-import { Message, MessageEmbed, NewsChannel, TextChannel } from "discord.js";
+import { Message, MessageAttachment, MessageEmbed, NewsChannel, TextChannel } from "discord.js";
 
 export async function determineWinner(sql: pg.Client, client: GiveawayClient){
     let expired = await sql.query(`SELECT * FROM giveaways WHERE duration <= ${Date.now()}`)
@@ -9,14 +9,13 @@ export async function determineWinner(sql: pg.Client, client: GiveawayClient){
         let users = giveaway.users as string[]
         if(!users.length) {
             client.log(`Giveaway \`${giveaway.id}\` ended with no entries`)
-            await sql.query(`DELETE FROM giveaways WHERE id='${giveaway.id}'`)
+            //await sql.query(`DELETE FROM giveaways WHERE id='${giveaway.id}'`)
             return
         }
         //await sql.query(`DELETE FROM giveaways WHERE id='${giveaway.id}'`)
         const winners = users.sort(() => Math.random() > 0.5 ? 1 : -1).splice(0, giveaway.winners)
         let channel = await client.channels.fetch(giveaway.channel_id).catch(() => null)
         let message: Message | undefined
-        console.log(channel)
         if(channel instanceof TextChannel || channel instanceof NewsChannel) {
             message = await channel.messages.fetch(giveaway.id).catch(() => undefined)
 
@@ -28,15 +27,28 @@ export async function determineWinner(sql: pg.Client, client: GiveawayClient){
 
         let dms_closed: string[] = []
         let newwinners: string[] = []
-        let oneprize = giveaway.prize.length !== giveaway.winners
 
-        let keys =  await sql.query(`SELECT * FROM prizes WHERE id='${giveaway.id}'`)
-        sql.query(`DELETE FROM prizes WHERE id='${giveaway.id}'`)
-        let prizes = await sql.query(`INSERT INTO prizes VALUES ${winners.map((p, i) => `(DEFAULT, '${giveaway.id}', '${keys.rows[i].prize ?? keys.rows[0].prize}', '${p}')`).join(", ")} RETURNING *`)
+        let keys = await sql.query(`DELETE FROM prizes WHERE id='${giveaway.id}' AND user_id IS NULL RETURNING *`)
+        const values = winners.map((p, i) => `(DEFAULT, '${giveaway.id}', '${keys.rows[i]?.prize ?? keys.rows[0].prize}', '${p}')`)
+        const editquery = `INSERT INTO prizes VALUES ${values.join(", ")} RETURNING *`
+
+        let prizes = await sql.query(editquery)
+
+        let left_over_keys = keys.rows.filter(r => !prizes.rows.find(ro => ro.prize === r.prize))
+        
+
+        let res = new MessageEmbed()
+        .setColor("AQUA")
+        .setTitle("Giveaway ended. Not enough participants. Left over keys attached below")
+
+        let f = new MessageAttachment(Buffer.from(left_over_keys.map(r => r.prize).join("\n")), `${giveaway.id}_keys.txt`)
+        
+        client.log(res, [f])
+
 
         let embed = new MessageEmbed()
         .setTitle("🎉 You Won 🎉")
-        .setDescription(`You won in [this giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}}/${giveaway.channel_id}/${giveaway.id}). Do you want to accept your prize?`)
+        .setDescription(`You won in [this giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}). Do you want to accept your prize?`)
 
         let buttons = [{
             type: 1,
@@ -78,8 +90,20 @@ export async function determineWinner(sql: pg.Client, client: GiveawayClient){
             await sql.query(`UPDATE prizes SET user_id='${id}' WHERE user_id='${gotfrom}'`)
         }
 
-        let left_over = await sql.query(`SELECT * FROM prizes WHERE user_id in (${dms_closed.map(u => `'${u}'`).join(", ")})`)
+
+        if(!dms_closed.length) return;
+        let q = `DELETE FROM prizes WHERE user_id IN (${dms_closed.map(u => `'${u}'`).join(", ")}) RETURNING *`
+        let left_over = await sql.query(q)
         // idfk what to do with it
+
+
+        let result = new MessageEmbed()
+        .setColor("AQUA")
+        .setTitle("Giveaway ended. Leftover keys")
+
+        let file = new MessageAttachment(Buffer.from(left_over.rows.map(r => r.prize).join("\n")), `${giveaway.id}_keys.txt`)
+        
+        client.log(result, [file])
 
     }
 }

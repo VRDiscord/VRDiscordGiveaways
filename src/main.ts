@@ -69,10 +69,12 @@ connection.connect().catch(console.error)
 const keepAlive = async () => {
     let res = await connection.query("SELECT * FROM giveaways LIMIT 1").catch(() => null)
     //await connection.query("DROP TABLE giveaways")
-    //let res = await connection.query("CREATE TABLE giveaways (id varchar(21) not null primary key, duration bigint not null, users text[] not null default '{}', winners int not null, channel_id varchar(21) not null)")
+    //let res = await connection.query("CREATE TABLE giveaways (id varchar(21) not null primary key, duration bigint not null, users text[] not null default '{}', winners int not null, channel_id varchar(21) not null, rolled boolean default false)")
     //let res = await connection.query("CREATE TABLE prizes (index SERIAL, id varchar(21) not null, prize varchar(255) not null, user_id varchar(21))")
 
-    console.log(res)
+    //console.log(res)
+    //connection.query("DELETE FROM giveaways")
+    //connection.query("DELETE FROM prizes")
     if(!res) {
         await connection.end().catch(() => null);
         await connection.connect().catch(() => null);
@@ -103,10 +105,10 @@ connection.on("error", (e) => {
 
 
 client.on("interactionCreate", async (interaction): Promise<any> => {
-    if(interaction.channel?.type === "DM" && interaction.type !== "PING" && interaction.type !== "APPLICATION_COMMAND_AUTOCOMPLETE")
-    return (interaction as CommandInteraction).reply({content: "You can't use commands in DMs"})
 
     if(interaction.isApplicationCommand()) {
+        if(interaction.channel?.type === "DM" && interaction.type !== "PING" && interaction.type !== "APPLICATION_COMMAND_AUTOCOMPLETE")
+        return (interaction as CommandInteraction).reply({content: "You can't use commands in DMs"})
         const command = client.commands.get(interaction.commandName)
         if(!command) return
         let member: GuildMember | undefined = undefined
