@@ -1,4 +1,4 @@
-import { Collection, MessageEmbed, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
+import { Collection, MessageAttachment, MessageEmbed, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
 import { Button } from "../classes/button";
 import { ButtonContext } from "../classes/buttonContext";
 
@@ -12,51 +12,79 @@ export default class Test extends Button {
         this.staffOnly = false
     }
     async run(ctx: ButtonContext): Promise<any> {
-        let giveaway = await ctx.sql.query(`SELECT * FROM giveaways WHERE id='${ctx.customId.split("_")[1]}'`)
-        let alreadywon = await ctx.sql.query(`SELECT * FROM prizes WHERE id='${ctx.customId.split("_")[1]}'`)
-        let users = giveaway.rows[0].users.filter((u: string) => alreadywon.rows[0].find((r: {user_id: string}) => r.user_id === u)).sort(() => Math.random() > 0.5 ? -1 : 1)
-        console.log(users)
+        let id = ctx.customId.split("_")[1]
+        let giveaway = await ctx.sql.query(`SELECT * FROM giveaways WHERE id='${id}'`)
+        let key = await ctx.sql.query(`SELECT * FROM prizes WHERE id='${id}'`)
+        if(!key.rows.length) {
+            return ctx.update({content: "Your prize has been auto rerolled due to inactivity or the hand out process has been stopped", components: [], embeds: []})
+        }
+        let users = giveaway.rows[0].users.filter((u: string) => !key.rows.find(r => r.user_id === u)).filter((u: string) => !giveaway.rows[0].won_users.includes(u))
+
+        ctx.update({embeds: [], components: [], content: `Thanks for participating.`})
+        
         if(!users.length) {
-
-            ctx.update({content: `Thanks for participating`, components: [], embeds: []})
-
+            let q = `DELETE FROM prizes WHERE user_id='${ctx.interaction.user.id}' AND id='${id}' RETURNING *`
+            let left_over = await ctx.sql.query(q)
+    
             let result = new MessageEmbed()
             .setColor("AQUA")
-            .setTitle("User denied prize and no other users to reroll to were found.\n\n**Key**: " + alreadywon.rows.find(r => r.user_id === ctx.interaction.user.id))
+            .setTitle("Prize denied and no further winners can be determined")
+            .setDescription(`\`${left_over.rows[0].prize}\``)
+            
             ctx.log(result)
-            return
-        }
-        let prize = await ctx.sql.query(`UPDATE prizes SET user_id='${users[0]}' WHERE user_id='${ctx.interaction.user.id}' AND id='${ctx.customId.split("_")[1]}' RETURNING *`)
-        ctx.update({content: `The prize has been rerolled. Thanks for participating`, components: [], embeds: []})
+            //give log not given away key
+        } else {
+            users = users.sort(() => Math.random() > 0.5 ? 1 : -1);
+            let winners = users.splice(0, 1)
+            await ctx.sql.query(`UPDATE prizes SET user_id='${winners[0]}', changed=${Date.now()} WHERE user_id='${ctx.interaction.user.id}'`)
+            let dms_closed = []
 
-        
-        let embed = new MessageEmbed()
-        .setTitle("🎉 You Won 🎉")
-        .setDescription(`You won in [this giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}}/${giveaway.rows[0].channel_id}/${giveaway.rows[0].id}). Do you want to accept your prize?`)
+            
+            let embed = new MessageEmbed()
+            .setTitle("🎉 You Won 🎉")
+            .setDescription(`You won in [this giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.rows[0].channel_id}/${id}). Do you want to accept your prize?`)
 
-        let buttons = [{
-            type: 1,
-            components: [{
-                type: 2,
-                custom_id: `accept_${giveaway.rows[0].id}`,
-                label: "Accept",
-                style: 3
-            },{
-                type: 2,
-                custom_id: `deny_${giveaway.rows[0].id}`,
-                label: "Deny",
-                style: 4
+            let components = [{
+                type: 1,
+                components: [{
+                    type: 2,
+                    custom_id: `accept_${id}`,
+                    label: "Accept",
+                    style: 3
+                },{
+                    type: 2,
+                    custom_id: `deny_${id}`,
+                    label: "Deny",
+                    style: 4
+                }]
             }]
-        }]
 
-        let given_away = false
-        while(!given_away) {
-            let id = users.shift()
-            let user = await ctx.client.users.fetch(id).catch(() => null)
-            if(!user) return
-            let res = await user.send({embeds: [embed], components: buttons}).catch(() => null)
-            if(res) given_away = true
-            if(!users.length) break //no user left to give away to
+            while(winners.length) {
+                let uid = winners.splice(0, 1)[0]
+                let user = await ctx.client.users.fetch(uid)
+                let res = await user.send({embeds: [embed], components}).catch(() => null)
+                if(!res) {
+                    if(users.length) {
+                        let newid = users.splice(0, 1)[0]
+                        winners.push(newid)
+                        await ctx.sql.query(`UPDATE prizes SET user_id='${newid}' WHERE user_id='${uid}'`)
+                    } else {
+                        dms_closed.push(uid)
+                    }
+                }
+            }
+
+            if(dms_closed.length) {
+                let q = `DELETE FROM prizes WHERE user_id IN (${dms_closed.map(u => `'${u}'`).join(", ")}) AND id='${id}' RETURNING *`
+                let left_over = await ctx.sql.query(q)
+        
+                let result = new MessageEmbed()
+                .setColor("AQUA")
+                .setTitle("Prize denied and no further winners can be determined")
+                .setDescription(`**GiveawayID**: ${id}\n\`${left_over.rows[0].prize}\``)
+                
+                ctx.log(result)
+            }
         }
     }
 }

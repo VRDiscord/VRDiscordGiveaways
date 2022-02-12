@@ -6,6 +6,7 @@ import pg from "pg"
 import { ButtonContext } from "./classes/buttonContext"
 import { syncDB } from "./intervals/syncdb"
 import { determineWinner } from "./intervals/determineWinners"
+import { rerollPrizes } from "./intervals/rerollPrizes"
 
 const RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*(.*)?\s*$/
 
@@ -68,11 +69,11 @@ connection.connect().catch(console.error)
 
 const keepAlive = async () => {
     let res = await connection.query("SELECT * FROM giveaways LIMIT 1").catch(() => null)
-    //await connection.query("DROP TABLE giveaways")
-    //let res = await connection.query("CREATE TABLE giveaways (id varchar(21) not null primary key, duration bigint not null, users text[] not null default '{}', winners int not null, channel_id varchar(21) not null, rolled boolean default false)")
-    //let res = await connection.query("CREATE TABLE prizes (index SERIAL, id varchar(21) not null, prize varchar(255) not null, user_id varchar(21))")
+    //let res = await connection.query("DROP TABLE giveaways")
+    //await connection.query("CREATE TABLE giveaways (id varchar(21) not null primary key, duration bigint not null, users text[] not null default '{}', won_users text[] default '{}', winners int not null, channel_id varchar(21) not null, rolled boolean not null)")
+    //await connection.query("CREATE TABLE prizes (index SERIAL, id varchar(21) not null, prize varchar(255) not null, user_id varchar(21), changed bigint)")
 
-    //console.log(res)
+    console.log(res)
     //connection.query("DELETE FROM giveaways")
     //connection.query("DELETE FROM prizes")
     if(!res) {
@@ -84,6 +85,7 @@ const keepAlive = async () => {
 const giveawayController = async () => {
     await syncDB(connection, client)
     await determineWinner(connection, client)
+    await rerollPrizes(connection, client)
 }
 
 keepAlive()

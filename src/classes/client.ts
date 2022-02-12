@@ -1,4 +1,4 @@
-import { Client, ClientOptions, Collection, Message, MessageAttachment, MessageEmbed } from "discord.js";
+import { Client, ClientOptions, Collection, Message, MessageAttachment, MessageEmbed, Snowflake } from "discord.js";
 import { Button } from "./button";
 import { Command } from "./command";
 
@@ -6,11 +6,13 @@ export class GiveawayClient extends Client{
     commands: Collection<string, Command>
     buttons: Collection<string, Button>
     giveawayCache: Collection<string, string[]>
+    blacklisted: Snowflake[]
     constructor(options: ClientOptions){
         super(options)
         this.commands = new Collection()
         this.buttons = new Collection()
         this.giveawayCache = new Collection()
+        this.blacklisted = []
     }
 
     async log(message: string | MessageEmbed | MessageEmbed[], files?: MessageAttachment[]): Promise<Message | null> {

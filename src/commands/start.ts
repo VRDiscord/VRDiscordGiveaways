@@ -67,7 +67,7 @@ export default class Test extends Command {
         if(!/^https:\/\/cdn\.discordapp\.com\/attachments\/[0-9]{16,20}\/[0-9]{16,20}\/[\S]+\.txt$/.test(ctx.arguments.get("prize_attachment_url")?.value?.toString() ?? "")) return ctx.error("That's not a valid attachment url")
         let prizes = await request(ctx.arguments.get("prize_attachment_url")?.value?.toString()!, "GET").send().then(res => {
             if(res.statusCode !== 200) return []
-            return res.body.toString().split("\r\n")
+            return res.body.toString().split("\n").map(k => k.replace("\r", ""))
         })
 
         if(!prizes.length) return ctx.error("That's not a valid attachment url")
@@ -82,7 +82,7 @@ export default class Test extends Command {
         let id = await ctx.interaction.channel?.send({content: !mention ? undefined : mention === ctx.interaction.guildId ? "@everyone" : `<@&${mention}>`, embeds: [embed], components: button}).catch(() => null)
         if(!id) return ctx.error("Unable to start giveaway")
 
-        let req = await ctx.sql.query(`INSERT INTO giveaways VALUES ('${id.id}', ${Date.now()+duration}, '{}', ${winners}, ${id.channelId}) RETURNING id`,).catch(console.error)
+        let req = await ctx.sql.query(`INSERT INTO giveaways VALUES ('${id.id}', ${Date.now()+duration}, '{}', DEFAULT, ${winners}, ${id.channelId}, FALSE) RETURNING id`,).catch(console.error)
         if(!req) {
             id?.delete()
             return ctx.error("Unable to start giveaway")

@@ -8,8 +8,8 @@ import request from "petitio"
 
 const commandData: ApplicationCommandData = {
     type: ApplicationCommandTypes.CHAT_INPUT,
-    name: "delete",
-    description: "Silently deletes a giveaway",
+    name: "viewkeys",
+    description: "Shows pending keys for a giveaway",
     options: [{
         type: "STRING",
         name: "message_id",
@@ -28,18 +28,9 @@ export default class Test extends Command {
     }
     async run(ctx: CommandContext): Promise<any> {
         let id = ctx.arguments.get("message_id")?.value?.toString() ?? ""
-        let res = await ctx.sql.query(`DELETE FROM giveaways WHERE id=$1 RETURNING *`, [id])
-        let keys = await ctx.sql.query(`DELETE FROM prizes WHERE id=$1 RETURNING *`, [id])
-        let file = new MessageAttachment(Buffer.from(keys.rows.map(r => r.prize).join("\n")), `${id}_keys.txt`)
-        ctx.reply({content: `Ended giveaway with id \`${res.rows[0].id}\``, files: [file]})
-
-        let channel = await ctx.client.channels.fetch(res.rows[0].channel_id).catch(() => null)
-        let message: Message | undefined
-        if(channel instanceof TextChannel || channel instanceof NewsChannel) {
-            message = await channel.messages.fetch(id).catch(() => undefined)
-            message?.delete().catch()
-        }
-
-        ctx.client.log(`${ctx.interaction.member?.user.username}#${ctx.interaction.member?.user.discriminator} deleted the giveaway \`${id}\` with ${res.rows[0].users} entries`, [file])
+        let keys = await ctx.sql.query(`SELECT * FROM prizes WHERE id=$1`, [id])
+        if(!keys.rowCount) return ctx.error("No keys for that giveaway found")
+        let file = new MessageAttachment(Buffer.from(keys.rows.map(r => `Prize: ${r.prize} || Pending User: ${r.user_id ?? "none"}`).join("\n")), `${id}_keys.txt`)
+        ctx.reply({content: `You have ${keys.rowCount} pending keys below from giveaway ${id}`, files: [file]})
     }
 }
