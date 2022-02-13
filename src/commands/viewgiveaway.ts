@@ -35,7 +35,7 @@ export default class Test extends Command {
             .setDescription(`[This giveaway](https://discord.com/channels/${ctx.interaction.guildId}/${res.rows[0].channel_id}/${res.rows[0].id})`)
             .addFields([
                 {name: "**ID**", value: id, inline: true},
-                {name: "**Given out**", value: `${res.rows[0].won_users}/${res.rows[0].winners}`, inline: true},
+                {name: "**Given out**", value: `${res.rows[0].won_users.length}/${res.rows[0].winners}`, inline: true},
                 {name: "**Participants**", value: `${ctx.client.giveawayCache.get(id)!.length}`, inline: true},
                 {name: "**Ends**", value: `<t:${Math.floor((res.rows[0].duration)/1000)}:R>`, inline: true}
             ])
