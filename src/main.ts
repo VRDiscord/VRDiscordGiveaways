@@ -10,6 +10,7 @@ import { rerollPrizes } from "./intervals/rerollPrizes"
 
 const RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*(.*)?\s*$/
 
+console.log(process.env)
 if (existsSync(`${process.cwd()}/.env`))
     for (const line of readFileSync(`${process.cwd()}/.env`, 'utf8').split(/[\r\n]|\r\n/)) {
         let [, key, value] = line.match(RE_INI_KEY_VAL) || []
