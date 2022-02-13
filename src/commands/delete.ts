@@ -27,8 +27,9 @@ export default class Test extends Command {
         let id = ctx.arguments.get("message_id")?.value?.toString() ?? ""
         let res = await ctx.sql.query(`DELETE FROM giveaways WHERE id=$1 RETURNING *`, [id])
         let keys = await ctx.sql.query(`DELETE FROM prizes WHERE id=$1 RETURNING *`, [id])
-        let file = new MessageAttachment(Buffer.from(keys.rows.map(r => r.prize).join("\n")), `${id}_keys.txt`)
-        ctx.reply({content: `Ended giveaway with id \`${res.rows[0].id}\``, files: [file]})
+        let file
+        if(keys.rowCount) file = new MessageAttachment(Buffer.from(keys.rows.map(r => r.prize).join("\n")), `${id}_keys.txt`)
+        ctx.reply({content: `Ended giveaway with id \`${res.rows[0].id}\``, files: file ? [file] : undefined})
 
         let channel = await ctx.client.channels.fetch(res.rows[0].channel_id).catch(() => null)
         let message: Message | undefined
@@ -37,6 +38,6 @@ export default class Test extends Command {
             message?.delete().catch()
         }
 
-        ctx.client.log(`${ctx.interaction.member?.user.username}#${ctx.interaction.member?.user.discriminator} deleted the giveaway \`${id}\` with ${res.rows[0].users} entries`, [file])
+        ctx.client.log(`${ctx.interaction.member?.user.username}#${ctx.interaction.member?.user.discriminator} deleted the giveaway \`${id}\` with ${res.rows[0].users.length} entries`, file ? [file] : undefined)
     }
 }
