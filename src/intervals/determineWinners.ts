@@ -6,7 +6,9 @@ export async function determineWinner(sql: pg.Client, client: GiveawayClient){
     let expired = await sql.query(`SELECT * FROM giveaways WHERE duration <= ${Date.now()} AND NOT rolled`)
     console.log(expired)
     for(let giveaway of expired.rows) {
-        let users = (giveaway.users as string[]).filter((u: string) => !giveaway.won_users.includes(u))
+        let pending_users = await sql.query(`SELECT * FROM prizes WHERE user_id IS NOT NULL`)
+        // filters out pending users for other giveaways
+        let users = (giveaway.users as string[]).filter((u: string) => !giveaway.won_users.includes(u)).filter(r => !pending_users.rows.find(ro => ro.user_id === r))
         if(!users.length) {
             client.log(`Giveaway \`${giveaway.id}\` ended with no entries`)
             await sql.query(`UPDATE giveaways SET rolled=TRUE WHERE id='${giveaway.id}'`)

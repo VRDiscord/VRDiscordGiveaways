@@ -1,4 +1,4 @@
-import { MessageEmbed} from "discord.js";
+import { MessageEmbed, Snowflake} from "discord.js";
 import { Button } from "../classes/button";
 import { ButtonContext } from "../classes/buttonContext";
 
@@ -18,7 +18,9 @@ export default class Test extends Button {
         if(!key.rows.length) {
             return ctx.update({content: "Your prize has been auto rerolled due to inactivity or the hand out process has been stopped", components: [], embeds: []})
         }
-        let users = giveaway.rows[0].users.filter((u: string) => !key.rows.find(r => r.user_id === u)).filter((u: string) => !giveaway.rows[0].won_users.includes(u))
+        let pending_users = await ctx.sql.query(`SELECT * FROM prizes WHERE user_id IS NOT NULL`)
+        // filters out pending users for other giveaways
+        let users = giveaway.rows[0].users.filter((u: string) => !key.rows.find(r => r.user_id === u)).filter((u: string) => !giveaway.rows[0].won_users.includes(u)).filter((r: Snowflake) => !pending_users.rows.find(ro => ro.user_id === r))
 
         ctx.update({embeds: [], components: [], content: `Thanks for participating.`})
         
