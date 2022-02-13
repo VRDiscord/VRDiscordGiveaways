@@ -32,7 +32,7 @@ export default class Test extends Command {
     async run(ctx: CommandContext): Promise<any> {
         let prizes = await request(ctx.arguments.get("prize_attachment_url")?.value?.toString()!, "GET").send().then(res => {
             if(res.statusCode !== 200) return []
-            return res.body.toString().split("\n").map(k => k.replace("\r", ""))
+            return res.body.toString().split("\n").map(k => k.replace("\r", "")).filter(v => v)
         }).catch(() => [])
         if(!prizes.length) return ctx.error("Invalid file")
 
