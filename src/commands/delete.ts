@@ -29,7 +29,7 @@ export default class Test extends Command {
         let keys = await ctx.sql.query(`DELETE FROM prizes WHERE id=$1 RETURNING *`, [id])
         let file
         if(keys.rowCount) file = new MessageAttachment(Buffer.from(keys.rows.map(r => r.prize).join("\n")), `${id}_keys.txt`)
-        ctx.reply({content: `Ended giveaway with id \`${res.rows[0].id}\``, files: file ? [file] : undefined})
+        ctx.reply({content: `Ended giveaway with id \`${res.rows[0].id}\``, files: file ? [file] : undefined, ephemeral: true})
 
         let channel = await ctx.client.channels.fetch(res.rows[0].channel_id).catch(() => null)
         let message: Message | undefined
