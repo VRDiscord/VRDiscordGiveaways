@@ -13,7 +13,7 @@ const commandData: ApplicationCommandData = {
         description: "The id of the giveaway message",
         required: true
     },{
-        type: "INTEGER",
+        type: "NUMBER",
         name: "duration",
         description: "The hours you want to extend the giveaway by",
         required: true
