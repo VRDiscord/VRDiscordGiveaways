@@ -5,7 +5,7 @@ import { CommandContext } from "../classes/commandContext";
 
 const commandData: ApplicationCommandData = {
     type: ApplicationCommandTypes.CHAT_INPUT,
-    name: "viewactive",
+    name: "viewgiveaway",
     description: "Shows the status of a giveaway",
     options: [{
         type: "STRING",
