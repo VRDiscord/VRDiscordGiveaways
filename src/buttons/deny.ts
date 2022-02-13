@@ -13,6 +13,14 @@ export default class Test extends Button {
     }
     async run(ctx: ButtonContext): Promise<any> {
         let id = ctx.customId.split("_")[1]
+        if(!(ctx.client.confirmationcheck.get(id) ?? []).includes(ctx.interaction.user.id)) {
+            let users = ctx.client.confirmationcheck.get(id) ?? []
+            ctx.client.confirmationcheck.set(id, [...users, ctx.interaction.user.id])
+            return ctx.reply({content: "Do you really want to deny your prize?\nTo deny press the button again", ephemeral: true})
+        } else {
+            let users = ctx.client.confirmationcheck.get(id) ?? []
+            ctx.client.confirmationcheck.set(id, users.filter(u => u !== ctx.interaction.user.id))
+        }
         let giveaway = await ctx.sql.query(`SELECT * FROM giveaways WHERE id='${id}'`)
         let key = await ctx.sql.query(`SELECT * FROM prizes WHERE id='${id}'`)
         if(!key.rows.length) {

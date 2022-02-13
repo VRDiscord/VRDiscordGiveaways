@@ -1,3 +1,4 @@
+import SuperMap from "@thunder04/supermap";
 import { Client, ClientOptions, Collection, Message, MessageAttachment, MessageEmbed, Snowflake } from "discord.js";
 import { Button } from "./button";
 import { Command } from "./command";
@@ -7,11 +8,13 @@ export class GiveawayClient extends Client{
     buttons: Collection<string, Button>
     giveawayCache: Collection<string, string[]>
     blacklisted: Snowflake[]
+    confirmationcheck: SuperMap<Snowflake, Snowflake[]>
     constructor(options: ClientOptions){
         super(options)
         this.commands = new Collection()
         this.buttons = new Collection()
         this.giveawayCache = new Collection()
+        this.confirmationcheck = new SuperMap({expireAfter: 1000*60*60})
         this.blacklisted = []
     }
 
