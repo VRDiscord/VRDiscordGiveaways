@@ -4,7 +4,6 @@ import { Message, MessageAttachment, MessageEmbed, NewsChannel, TextChannel } fr
 
 export async function determineWinner(sql: pg.Client, client: GiveawayClient){
     let expired = await sql.query(`SELECT * FROM giveaways WHERE duration <= ${Date.now()} AND NOT rolled`)
-    console.log(expired)
     for(let giveaway of expired.rows) {
         let pending_users = await sql.query(`SELECT * FROM prizes WHERE user_id IS NOT NULL`)
         // filters out pending users for other giveaways
