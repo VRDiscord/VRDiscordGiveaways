@@ -28,6 +28,6 @@ export default class Test extends Command {
         let keys = await ctx.sql.query(`SELECT * FROM prizes WHERE id=$1`, [id])
         if(!keys.rowCount) return ctx.error("No keys for that giveaway found")
         let file = new MessageAttachment(Buffer.from(keys.rows.map(r => `Prize: ${r.prize} || Pending User: ${r.user_id ?? "none"}`).join("\n")), `${id}_keys.txt`)
-        ctx.reply({content: `You have ${keys.rowCount} pending keys below from giveaway ${id}`, files: [file]})
+        ctx.reply({content: `You have ${keys.rowCount} pending keys below from giveaway ${id}`, files: [file], ephemeral: true})
     }
 }
