@@ -1,10 +1,7 @@
-import { ApplicationCommandData, Message, MessageAttachment, MessageEmbed, NewsChannel, TextChannel } from "discord.js";
+import { ApplicationCommandData, Message, MessageAttachment, NewsChannel, TextChannel } from "discord.js";
 import { ApplicationCommandTypes } from "discord.js/typings/enums";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
-import { determineWinner } from "../intervals/determineWinners";
-import { syncDB } from "../intervals/syncdb";
-import request from "petitio"
 
 const commandData: ApplicationCommandData = {
     type: ApplicationCommandTypes.CHAT_INPUT,

@@ -1,6 +1,6 @@
 import { GiveawayClient } from "../classes/client";
 import pg from "pg"
-import { Message, MessageAttachment, MessageEmbed, NewsChannel, Snowflake, TextChannel } from "discord.js";
+import { Message, MessageAttachment, MessageEmbed, NewsChannel, TextChannel } from "discord.js";
 
 export async function determineWinner(sql: pg.Client, client: GiveawayClient){
     let expired = await sql.query(`SELECT * FROM giveaways WHERE duration <= ${Date.now()} AND NOT rolled`)

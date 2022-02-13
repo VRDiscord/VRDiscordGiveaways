@@ -1,4 +1,3 @@
-import { Collection, MessageEmbed, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
 import { Button } from "../classes/button";
 import { ButtonContext } from "../classes/buttonContext";
 

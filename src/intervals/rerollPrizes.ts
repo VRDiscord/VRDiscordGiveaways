@@ -1,6 +1,6 @@
 import { GiveawayClient } from "../classes/client";
 import pg from "pg"
-import { Collection, MessageEmbed } from "discord.js";
+import { MessageEmbed } from "discord.js";
 
 export async function rerollPrizes(sql: pg.Client, client: GiveawayClient){
     let giveaways = await sql.query(`SELECT * FROM giveaways WHERE rolled`)

@@ -1,4 +1,4 @@
-import { ButtonInteraction, GuildMember, InteractionDeferReplyOptions, InteractionDeferUpdateOptions, InteractionReplyOptions, InteractionUpdateOptions, Message, MessageEmbed, PartialGroupDMChannel } from "discord.js";
+import { Message, MessageEmbed } from "discord.js";
 import { GiveawayClient } from "./client";
 import pg from "pg"
 

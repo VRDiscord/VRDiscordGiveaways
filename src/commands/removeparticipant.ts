@@ -1,8 +1,7 @@
-import { ApplicationCommandData, Message, MessageEmbed, NewsChannel, TextChannel } from "discord.js";
+import { ApplicationCommandData } from "discord.js";
 import { ApplicationCommandTypes } from "discord.js/typings/enums";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
-import { determineWinner } from "../intervals/determineWinners";
 import { syncDB } from "../intervals/syncdb";
 
 const commandData: ApplicationCommandData = {

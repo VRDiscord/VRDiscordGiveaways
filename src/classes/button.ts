@@ -1,7 +1,5 @@
-import { ApplicationCommand, ApplicationCommandData } from "discord.js";
 import { ButtonContext } from "./buttonContext";
 import { GiveawayClient } from "./client";
-import { CommandContext } from "./commandContext";
 
 export class Button{
     name: string

@@ -1,4 +1,4 @@
-import { ApplicationCommand, ApplicationCommandData } from "discord.js";
+import { ApplicationCommandData } from "discord.js";
 import { GiveawayClient } from "./client";
 import { CommandContext } from "./commandContext";
 

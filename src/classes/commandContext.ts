@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, Collection, CommandInteraction, CommandInteractionOption, GuildMember, InteractionDeferReplyOptions, InteractionReplyOptions, Message } from "discord.js";
+import { BaseCommandInteraction, Collection, CommandInteractionOption, GuildMember, InteractionDeferReplyOptions, InteractionReplyOptions } from "discord.js";
 import { BaseContext } from "./baseContext";
 import { GiveawayClient } from "./client";
 import pg from "pg"

@@ -1,4 +1,4 @@
-import { ApplicationCommandData, MessageEmbed, TextChannel } from "discord.js";
+import { ApplicationCommandData, MessageEmbed } from "discord.js";
 import { ApplicationCommandTypes } from "discord.js/typings/enums";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
