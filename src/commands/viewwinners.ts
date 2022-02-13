@@ -18,7 +18,6 @@ const commandData: ApplicationCommandData = {
     }]
 }
 
-
 export default class Test extends Command {
     constructor() {
         super(commandData)

@@ -29,7 +29,7 @@ export default class Test extends Command {
         super(commandData)
         this.name = commandData.name
         this.staffOnly = true
-        this.description = `Deletes a giveaway`
+        this.description = `Extends a giveaway`
     }
     async run(ctx: CommandContext): Promise<any> {
         let id = ctx.arguments.get("message_id")?.value?.toString() ?? ""

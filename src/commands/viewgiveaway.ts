@@ -8,7 +8,7 @@ import { syncDB } from "../intervals/syncdb";
 const commandData: ApplicationCommandData = {
     type: ApplicationCommandTypes.CHAT_INPUT,
     name: "viewactive",
-    description: "Ends a giveaway",
+    description: "Shows the status of a giveaway",
     options: [{
         type: "STRING",
         name: "message_id",
@@ -50,7 +50,7 @@ export default class Test extends Command {
             if(desc.length > 4000) return ctx.reply({content: "Attached below", files: [new MessageAttachment(Buffer.from(desc), "giveaways.txt")], ephemeral: true})
             let embed = new MessageEmbed()
             .setColor("AQUA")
-            .setTitle("Active giveaways")
+            .setTitle("Giveaways")
             .setDescription(desc)
         
             ctx.reply({embeds: [embed], ephemeral: true})

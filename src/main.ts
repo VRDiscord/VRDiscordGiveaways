@@ -72,6 +72,7 @@ const keepAlive = async () => {
     //let res = await connection.query("DROP TABLE giveaways")
     //await connection.query("CREATE TABLE giveaways (id varchar(21) not null primary key, duration bigint not null, users text[] not null default '{}', won_users text[] default '{}', winners int not null, channel_id varchar(21) not null, rolled boolean not null)")
     //await connection.query("CREATE TABLE prizes (index SERIAL, id varchar(21) not null, prize varchar(255) not null, user_id varchar(21), changed bigint)")
+    //await connection.query("CREATE TABLE freekeys (index SERIAL, id varchar(21) not null, prize varchar(255) not null, user_id varchar(21), channel_id varchar(21) not null)")
 
     console.log(res)
     //connection.query("DELETE FROM giveaways")
