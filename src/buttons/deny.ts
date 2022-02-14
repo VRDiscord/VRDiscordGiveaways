@@ -35,13 +35,8 @@ export default class Test extends Button {
         if(!users.length) {
             let q = `DELETE FROM prizes WHERE user_id='${ctx.interaction.user.id}' AND id='${id}' RETURNING *`
             let left_over = await ctx.sql.query(q)
-    
-            let result = new MessageEmbed()
-            .setColor("AQUA")
-            .setTitle("Prize denied and no further winners can be determined")
-            .setDescription(`\`${left_over.rows[0].prize}\``)
             
-            ctx.log(result)
+            ctx.log(`${ctx.interaction.user.tag} (\`${ctx.interaction.user.id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
             //give log not given away key
         } else {
             users = users.sort(() => Math.random() > 0.5 ? 1 : -1);
@@ -88,12 +83,7 @@ export default class Test extends Button {
                 let q = `DELETE FROM prizes WHERE user_id IN (${dms_closed.map(u => `'${u}'`).join(", ")}) AND id='${id}' RETURNING *`
                 let left_over = await ctx.sql.query(q)
         
-                let result = new MessageEmbed()
-                .setColor("AQUA")
-                .setTitle("Prize denied and no further winners can be determined")
-                .setDescription(`**GiveawayID**: ${id}\n\`${left_over.rows[0].prize}\``)
-                
-                ctx.log(result)
+                ctx.log(`${ctx.interaction.user.tag} (\`${ctx.interaction.user.id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
             }
         }
     }

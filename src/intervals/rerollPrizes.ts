@@ -52,13 +52,8 @@ export async function rerollPrizes(sql: pg.Client, client: GiveawayClient){
         if(dms_closed.length) {
             let q = `DELETE FROM prizes WHERE user_id IN (${dms_closed.map(u => `'${u}'`).join(", ")}) AND id='${giveaway.id}' RETURNING *`
             let left_over = await sql.query(q)
-    
-            let result = new MessageEmbed()
-            .setColor("AQUA")
-            .setTitle("Auto reroll due to inactivity")
-            .setDescription(`**GiveawayID**: ${giveaway.id}\n\`${left_over.rows[0].prize}\``)
             
-            client.log(result)
+            client.log(`Auto rerolled prize (\`${left_over.rows[0].prize}\`) of \`${user_id}\` due to inactivity and no further winners could be determined.\n**GiveawayID** \`${giveaway.id}\``)
         }
     }
 }

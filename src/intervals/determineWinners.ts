@@ -39,14 +39,10 @@ export async function determineWinner(sql: pg.Client, client: GiveawayClient){
         
 
         if(left_over_keys.length) {
-            let res = new MessageEmbed()
-            .setColor("AQUA")
-            .setTitle("Giveaway ended. Not enough participants. Left over keys attached above")
-            .setDescription(`**GiveawayID**: ${giveaway.id}`)
 
             let f = new MessageAttachment(Buffer.from(left_over_keys.map(r => r.prize).join("\n")), `${giveaway.id}_keys.txt`)
             
-            client.log(res, [f])            
+            client.log(`Giveaway ended and not enough members entered so the left over keys are attached below.\n**GiveawayID** \`${giveaway.id}\``, [f])            
         }
 
 
@@ -91,15 +87,9 @@ export async function determineWinner(sql: pg.Client, client: GiveawayClient){
         let left_over = await sql.query(q)
         // idfk what to do with it
 
-
-        let result = new MessageEmbed()
-        .setColor("AQUA")
-        .setTitle("Giveaway ended. Leftover keys")
-        .setDescription(`**GiveawayID**: ${giveaway.id}`)
-
         let file = new MessageAttachment(Buffer.from(left_over.rows.map(r => r.prize).join("\n")), `${giveaway.id}_keys.txt`)
         
-        client.log(result, [file])
+        client.log(`Giveaway ended and not all keys could be handed out. Left over keys are attached below.\n**GiveawayID** \`${giveaway.id}\``, [file])
 
     }
 }

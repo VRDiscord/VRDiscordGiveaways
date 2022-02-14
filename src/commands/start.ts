@@ -77,7 +77,8 @@ export default class Test extends Command {
         let embed = new MessageEmbed()
         .setColor("AQUA")
         .setTitle(`New Giveaway by ${host}`)
-        .setDescription(`**Prize** ${description}\n**Winners** ${winners}\n**Ends** <t:${Math.floor((Date.now() + duration)/1000)}:R>\n\n**To claim your prize simply open your direct messages. The prize will be sent to you**`)
+        .setDescription(`**Prize** ${description}\n**Winners** ${winners}\n**Ends** <t:${Math.floor((Date.now() + duration)/1000)}:R>`)
+        .setFooter({text: "**To claim your prize simply open your direct messages. The prize will be sent to you**"})
     
         let id = await ctx.interaction.channel?.send({content: !mention ? undefined : mention === ctx.interaction.guildId ? "@everyone" : `<@&${mention}>`, embeds: [embed], components: button}).catch(() => null)
         if(!id) return ctx.error("Unable to start giveaway")
@@ -92,11 +93,10 @@ export default class Test extends Command {
 
         let result = new MessageEmbed()
         .setColor("AQUA")
-        .setTitle("Giveaway started for:")
-        .setDescription(`**${description}**`)
+        .setTitle(`Giveaway started by ${host}`)
+        .setDescription(`**Prize**: ${description}`)
+        .setFooter({text: `**ID** ${id!.id}`})
         .addFields([
-            {name: "**ID**", value: id!.id, inline: true},
-            {name: "**Host**", value: host, inline: true},
             {name: "**Ends**", value: `<t:${Math.floor((Date.now() + duration)/1000)}:R>`, inline: true},
             {name: "**Winners**", value: `${winners}`, inline: true},
             {name: "**Prizes**", value: `${prizes.length}`, inline: true}
