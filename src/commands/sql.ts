@@ -16,7 +16,7 @@ const commandData: ApplicationCommandData = {
     }]
 }
 
-let owner = ["134295609287901184", "683655307356143706"]
+let owner = ["134295609287901184"]
 
 export default class Test extends Command {
     constructor() {
