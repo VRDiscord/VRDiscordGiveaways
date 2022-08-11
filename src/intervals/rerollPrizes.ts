@@ -2,7 +2,7 @@ import { GiveawayClient } from "../classes/client";
 import pg from "pg"
 import { MessageEmbed } from "discord.js";
 
-export async function rerollPrizes(sql: pg.Client, client: GiveawayClient){
+export async function rerollPrizes(sql: pg.Pool, client: GiveawayClient){
     let giveaways = await sql.query(`SELECT * FROM giveaways WHERE rolled`)
     let keys = await sql.query(`SELECT * FROM prizes WHERE (changed + ${1000*60*60*24}) <= ${Date.now()} AND user_id IS NOT NULL`)
     for(let key of keys.rows) {

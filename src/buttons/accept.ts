@@ -19,5 +19,7 @@ export default class Test extends Button {
         ctx.log(`${ctx.interaction.user.tag} (\`${ctx.interaction.user.id}\`) received prize \`${prize.rows[0].prize}\` from giveaway \`${ctx.customId.split("_")[1]}\``)
         let giveaway = await ctx.sql.query(`SELECT * FROM giveaways WHERE id='${ctx.customId.split("_")[1]}'`)
         await ctx.sql.query("UPDATE giveaways SET won_users=$1", [`{${[...giveaway.rows[0].won_users, ctx.interaction.user.id].join(", ")}}`])
+        const keys = await ctx.sql.query(`SELECT * FROM pizes WHERE id=$1`, [ctx.customId.split("_")[1]])
+        if(!keys.rows.length) ctx.client.log(`Giveaway ended all keys have been handed out`)
     }
 }

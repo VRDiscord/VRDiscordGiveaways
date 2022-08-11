@@ -2,7 +2,7 @@ import { GiveawayClient } from "../classes/client";
 import pg from "pg"
 import { Message, MessageAttachment, MessageEmbed, NewsChannel, TextChannel } from "discord.js";
 
-export async function determineWinner(sql: pg.Client, client: GiveawayClient){
+export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
     let expired = await sql.query(`SELECT * FROM giveaways WHERE duration <= ${Date.now()} AND NOT rolled`)
     for(let giveaway of expired.rows) {
         let pending_users = await sql.query(`SELECT * FROM prizes WHERE user_id IS NOT NULL`)
@@ -90,6 +90,5 @@ export async function determineWinner(sql: pg.Client, client: GiveawayClient){
         let file = new MessageAttachment(Buffer.from(left_over.rows.map(r => r.prize).join("\n")), `${giveaway.id}_keys.txt`)
         
         client.log(`Giveaway ended and not all keys could be handed out. Left over keys are attached below.\n**GiveawayID** \`${giveaway.id}\``, [file])
-
     }
 }

@@ -82,7 +82,6 @@ export default class Test extends Button {
             if(dms_closed.length) {
                 let q = `DELETE FROM prizes WHERE user_id IN (${dms_closed.map(u => `'${u}'`).join(", ")}) AND id='${id}' RETURNING *`
                 let left_over = await ctx.sql.query(q)
-        
                 ctx.log(`${ctx.interaction.user.tag} (\`${ctx.interaction.user.id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
             }
         }

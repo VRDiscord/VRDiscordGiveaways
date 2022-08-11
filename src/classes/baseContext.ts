@@ -4,8 +4,8 @@ import pg from "pg"
 
 export class BaseContext{
     client: GiveawayClient
-    sql: pg.Client
-    constructor(client: GiveawayClient, sql: pg.Client){
+    sql: pg.Pool
+    constructor(client: GiveawayClient, sql: pg.Pool){
         this.client = client
         this.sql = sql
     }

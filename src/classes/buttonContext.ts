@@ -7,7 +7,7 @@ export class ButtonContext extends BaseContext{
     interaction: ButtonInteraction
     member?: GuildMember
     customId: string
-    constructor(client: GiveawayClient, interaction: ButtonInteraction, member: GuildMember | undefined, sql: pg.Client){
+    constructor(client: GiveawayClient, interaction: ButtonInteraction, member: GuildMember | undefined, sql: pg.Pool){
         super(client, sql)
         this.interaction = interaction
         this.member = member

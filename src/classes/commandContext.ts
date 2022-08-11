@@ -7,7 +7,7 @@ export class CommandContext extends BaseContext{
     interaction: BaseCommandInteraction
     member?: GuildMember
     arguments: Collection<string, CommandInteractionOption>
-    constructor(client: GiveawayClient, interaction: BaseCommandInteraction, member: GuildMember | undefined, sql: pg.Client){
+    constructor(client: GiveawayClient, interaction: BaseCommandInteraction, member: GuildMember | undefined, sql: pg.Pool){
         super(client, sql)
         this.interaction = interaction
         this.member = member
