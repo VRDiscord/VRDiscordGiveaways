@@ -89,10 +89,7 @@ const giveawayController = async () => {
     await rerollPrizes(connection, client)
 }
 
-keepAlive()
 giveawayController()
-
-setInterval( keepAlive, 1000*60*60)
 setInterval( giveawayController, 1000*60 )
 
 
