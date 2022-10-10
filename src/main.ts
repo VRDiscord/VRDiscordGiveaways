@@ -69,19 +69,14 @@ client.login(token)
 connection.connect().catch(console.error)
 
 const keepAlive = async () => {
-    let res = await connection.query("SELECT * FROM giveaways LIMIT 1").catch(() => null)
+    //await connection.query("SELECT * FROM giveaways LIMIT 1").then(console.log).catch(() => null)
     //let res = await connection.query("DROP TABLE giveaways")
     await connection.query("CREATE TABLE IF NOT EXISTS giveaways (id varchar(21) not null primary key, duration bigint not null, users text[] not null default '{}', won_users text[] default '{}', winners int not null, channel_id varchar(21) not null, rolled boolean not null)")
     await connection.query("CREATE TABLE IF NOT EXISTS prizes (index SERIAL, id varchar(21) not null, prize varchar(255) not null, user_id varchar(21), changed bigint)")
     await connection.query("CREATE TABLE IF NOT EXISTS freekeys (index SERIAL, id varchar(21) not null, prize varchar(255) not null, user_id varchar(21), channel_id varchar(21) not null)")
-
-    //connection.query("DELETE FROM giveaways")
-    //connection.query("DELETE FROM prizes")
-    if(!res) {
-        await connection.end().catch(() => null);
-        await connection.connect().catch(() => null);
-    }
 }
+
+keepAlive()
 
 const giveawayController = async () => {
     await syncDB(connection, client)

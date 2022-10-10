@@ -2,7 +2,7 @@ import { ApplicationCommandData, MessageEmbed } from "discord.js";
 import { ApplicationCommandTypes } from "discord.js/typings/enums";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
-import request from "petitio"
+import request from "centra"
 
 const commandData: ApplicationCommandData = {
     type: ApplicationCommandTypes.CHAT_INPUT,
@@ -107,9 +107,10 @@ export default class Test extends Command {
             ephemeral: true
         })
 
+
         let query = `INSERT INTO prizes VALUES ${prizes.map(p => `(DEFAULT, '${id!.id}', '${p}')`).join(", ")}`
 
-        ctx.sql.query(query)
+        ctx.sql.query(query).catch(console.error)
 
         ctx.log(result)
     }

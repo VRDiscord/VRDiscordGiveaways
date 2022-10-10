@@ -2,7 +2,7 @@ import { ApplicationCommandData, MessageEmbed } from "discord.js";
 import { ApplicationCommandTypes } from "discord.js/typings/enums";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
-import request from "petitio"
+import request from "centra"
 
 const commandData: ApplicationCommandData = {
     type: ApplicationCommandTypes.CHAT_INPUT,
