@@ -2,7 +2,7 @@ import { ApplicationCommandData, MessageEmbed, Snowflake } from "discord.js";
 import { ApplicationCommandTypes } from "discord.js/typings/enums";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
-import { syncDB } from "../intervals/syncdb";
+import { randomizeArray } from "../classes/randomizer";
 
 const commandData: ApplicationCommandData = {
     type: ApplicationCommandTypes.CHAT_INPUT,
@@ -34,7 +34,7 @@ export default class Test extends Command {
         if(!users.length) {
             ctx.reply({embeds: [], components: [], content: `Unable to find any winners`})
         } else {
-            users = users.sort(() => Math.random() > 0.5 ? 1 : -1);
+            users = randomizeArray(users);
             let winners = users.splice(0, 1)
             const user = await ctx.client.users.fetch(winners[0])
             ctx.reply({content: `Random user that has not won or accepting is pending the giveaway ${user.tag} (\`${winners[0]}\`)`})

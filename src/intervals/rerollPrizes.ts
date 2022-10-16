@@ -1,6 +1,7 @@
 import { GiveawayClient } from "../classes/client";
 import pg from "pg"
 import { MessageEmbed } from "discord.js";
+import { randomizeArray } from "../classes/randomizer";
 
 export async function rerollPrizes(sql: pg.Pool, client: GiveawayClient){
     let giveaways = await sql.query(`SELECT * FROM giveaways WHERE rolled`)
@@ -9,7 +10,7 @@ export async function rerollPrizes(sql: pg.Pool, client: GiveawayClient){
         let user_id = key.user_id
         await client.users.fetch(user_id).then(u => u.send("Your prize has been auto rerolled due to inactivity")).catch(() => null)
         let giveaway = giveaways.rows.find(r => r.id === key.id)
-        let users = giveaway.users.sort(() => Math.random() > 0.5 ? 1 : -1);
+        let users = randomizeArray(giveaway.users);
         let winners = users.splice(0, 1)
         await sql.query(`UPDATE prizes SET user_id='${winners[0]}', changed=${Date.now()} WHERE user_id='${key.user_id}'`)
         let dms_closed = []

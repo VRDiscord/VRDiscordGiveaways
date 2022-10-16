@@ -1,6 +1,7 @@
 import { MessageEmbed, Snowflake} from "discord.js";
 import { Button } from "../classes/button";
 import { ButtonContext } from "../classes/buttonContext";
+import { randomizeArray } from "../classes/randomizer";
 
 
 
@@ -39,7 +40,7 @@ export default class Test extends Button {
             ctx.log(`${ctx.interaction.user.tag} (\`${ctx.interaction.user.id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
             //give log not given away key
         } else {
-            users = users.sort(() => Math.random() > 0.5 ? 1 : -1);
+            users = randomizeArray( users );
             let winners = users.splice(0, 1)
             await ctx.sql.query(`UPDATE prizes SET user_id='${winners[0]}', changed=${Date.now()} WHERE user_id='${ctx.interaction.user.id}'`)
             let dms_closed = []
