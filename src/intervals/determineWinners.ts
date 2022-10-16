@@ -1,6 +1,6 @@
 import { GiveawayClient } from "../classes/client";
 import pg from "pg"
-import { Message, MessageAttachment, MessageEmbed, NewsChannel, TextChannel } from "discord.js";
+import { Message, AttachmentBuilder, EmbedBuilder, NewsChannel, TextChannel, Colors } from "discord.js";
 import { randomizeArray } from "../classes/randomizer";
 
 export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
@@ -21,8 +21,8 @@ export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
         if(channel instanceof TextChannel || channel instanceof NewsChannel) {
             message = await channel.messages.fetch(giveaway.id).catch(() => undefined)
 
-            let newembed = new MessageEmbed(message?.embeds[0])
-            .setColor("RED")
+            let newembed = new EmbedBuilder(message?.embeds[0].data)
+            .setColor(Colors.Red)
             message?.edit({embeds: [newembed], components: []})
             message?.reply({content: `**Giveaway ended**\n\nWinners have been messaged. If dms were closed the prize has been rerolled.`}).catch(() => null)
         }
@@ -41,14 +41,14 @@ export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
 
         if(left_over_keys.length) {
 
-            let f = new MessageAttachment(Buffer.from(left_over_keys.map(r => r.prize).join("\n")), `${giveaway.id}_keys.txt`)
+            let f = new AttachmentBuilder(Buffer.from(left_over_keys.map(r => r.prize).join("\n")), {name: `${giveaway.id}_keys.txt`})
             
             client.log(`Giveaway ended and not enough members entered so the left over keys are attached below.\n**GiveawayID** \`${giveaway.id}\``, [f])            
         }
 
 
 
-        let embed = new MessageEmbed()
+        let embed = new EmbedBuilder()
         .setTitle("🎉 You Won 🎉")
         .setDescription(`You won in [this giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}). Do you want to accept your prize?`)
 
@@ -88,7 +88,7 @@ export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
         let left_over = await sql.query(q)
         // idfk what to do with it
 
-        let file = new MessageAttachment(Buffer.from(left_over.rows.map(r => r.prize).join("\n")), `${giveaway.id}_keys.txt`)
+        let file = new AttachmentBuilder(Buffer.from(left_over.rows.map(r => r.prize).join("\n")), {name: `${giveaway.id}_keys.txt`})
         
         client.log(`Giveaway ended and not all keys could be handed out. Left over keys are attached below.\n**GiveawayID** \`${giveaway.id}\``, [file])
     }

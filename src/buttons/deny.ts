@@ -1,4 +1,4 @@
-import { MessageEmbed, Snowflake} from "discord.js";
+import { Colors, EmbedBuilder, Snowflake} from "discord.js";
 import { Button } from "../classes/button";
 import { ButtonContext } from "../classes/buttonContext";
 import { randomizeArray } from "../classes/randomizer";
@@ -46,8 +46,9 @@ export default class Test extends Button {
             let dms_closed = []
 
             
-            let embed = new MessageEmbed()
+            let embed = new EmbedBuilder()
             .setTitle("🎉 You Won 🎉")
+            .setColor(Colors.Yellow)
             .setDescription(`You won in [this giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.rows[0].channel_id}/${id}). Do you want to accept your prize?`)
 
             let components = [{

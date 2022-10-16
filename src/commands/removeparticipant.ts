@@ -1,20 +1,19 @@
-import { ApplicationCommandData } from "discord.js";
-import { ApplicationCommandTypes } from "discord.js/typings/enums";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
 import { syncDB } from "../intervals/syncdb";
 
 const commandData: ApplicationCommandData = {
-    type: ApplicationCommandTypes.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     name: "removeparticipant",
     description: "Removes a participant",
     options: [{
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "message_id",
         description: "The id of the giveaway message",
         required: true
     },{
-        type: "USER",
+        type: ApplicationCommandOptionType.User,
         name: "user",
         description: "The user you want to remove",
         required: true

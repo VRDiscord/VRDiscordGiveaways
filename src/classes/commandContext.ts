@@ -1,19 +1,19 @@
-import { BaseCommandInteraction, Collection, CommandInteractionOption, GuildMember, InteractionDeferReplyOptions, InteractionReplyOptions } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, CommandInteractionOption, GuildMember, InteractionDeferReplyOptions, InteractionReplyOptions } from "discord.js";
 import { BaseContext } from "./baseContext";
 import { GiveawayClient } from "./client";
 import pg from "pg"
 
 export class CommandContext extends BaseContext{
-    interaction: BaseCommandInteraction
+    interaction: ChatInputCommandInteraction
     member?: GuildMember
     arguments: Collection<string, CommandInteractionOption>
-    constructor(client: GiveawayClient, interaction: BaseCommandInteraction, member: GuildMember | undefined, sql: pg.Pool){
+    constructor(client: GiveawayClient, interaction: ChatInputCommandInteraction, member: GuildMember | undefined, sql: pg.Pool){
         super(client, sql)
         this.interaction = interaction
         this.member = member
         this.arguments = new Collection(
             this.interaction.options.data
-            .filter(v => v.type !== "SUB_COMMAND" && v.type !== "SUB_COMMAND_GROUP")
+            .filter(v => v.type !== ApplicationCommandOptionType.Subcommand && v.type !== ApplicationCommandOptionType.SubcommandGroup)
             .map(v => ([v.name, v]))
         )
     }

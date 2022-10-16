@@ -1,14 +1,13 @@
-import { ApplicationCommandData, MessageAttachment } from "discord.js";
-import { ApplicationCommandTypes } from "discord.js/typings/enums";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder } from "discord.js";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
 
 const commandData: ApplicationCommandData = {
-    type: ApplicationCommandTypes.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     name: "viewwinners",
     description: "Shows winners of a giveaway",
     options: [{
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "message_id",
         description: "The id of the giveaway message",
         required: true
@@ -27,7 +26,7 @@ export default class Test extends Command {
         let keys = await ctx.sql.query(`SELECT * FROM giveaways WHERE id=$1 AND rolled`, [id])
         if(!keys.rowCount) return ctx.error("No finished giveaways found from that id")
         if(!keys.rows[0].won_users.length) return ctx.error("No users have accepted their prize yet")
-        let file = new MessageAttachment(Buffer.from(keys.rows[0].won_users.join("\n")), `${id}_winners.txt`)
+        let file = new AttachmentBuilder(Buffer.from(keys.rows[0].won_users.join("\n")), {name: `${id}_winners.txt`})
         ctx.reply({content: `${keys.rows[0].won_users.length} winners who accepted attached below`, files: [file]})
     }
 }

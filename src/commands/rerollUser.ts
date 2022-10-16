@@ -1,21 +1,20 @@
-import { ApplicationCommandData, MessageEmbed, Snowflake } from "discord.js";
-import { ApplicationCommandTypes } from "discord.js/typings/enums";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, Colors, EmbedBuilder, Snowflake } from "discord.js";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
 import { randomizeArray } from "../classes/randomizer";
 import { syncDB } from "../intervals/syncdb";
 
 const commandData: ApplicationCommandData = {
-    type: ApplicationCommandTypes.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     name: "reroll",
     description: "Rerolls a participants prize",
     options: [{
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "message_id",
         description: "The id of the giveaway message",
         required: true
     },{
-        type: "USER",
+        type: ApplicationCommandOptionType.User,
         name: "user",
         description: "The user you want to remove",
         required: true
@@ -59,7 +58,8 @@ export default class Test extends Command {
             await ctx.sql.query(`UPDATE prizes SET user_id='${winners[0]}', changed=${Date.now()} WHERE user_id='${user_id}'`)
             let dms_closed = []
             
-            let embed = new MessageEmbed()
+            let embed = new EmbedBuilder()
+            .setColor(Colors.Yellow)
             .setTitle("🎉 You Won 🎉")
             .setDescription(`You won in [this giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.rows[0].channel_id}/${id}). Do you want to accept your prize?`)
 

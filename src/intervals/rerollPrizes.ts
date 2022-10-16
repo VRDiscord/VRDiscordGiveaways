@@ -1,6 +1,6 @@
 import { GiveawayClient } from "../classes/client";
 import pg from "pg"
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { randomizeArray } from "../classes/randomizer";
 
 export async function rerollPrizes(sql: pg.Pool, client: GiveawayClient){
@@ -16,7 +16,7 @@ export async function rerollPrizes(sql: pg.Pool, client: GiveawayClient){
         let dms_closed = []
 
         
-        let embed = new MessageEmbed()
+        let embed = new EmbedBuilder()
         .setTitle("🎉 You Won 🎉")
         .setDescription(`You won in [this giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}). Do you want to accept your prize?`)
 
