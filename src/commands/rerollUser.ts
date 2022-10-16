@@ -2,6 +2,7 @@ import { ApplicationCommandData, MessageEmbed, Snowflake } from "discord.js";
 import { ApplicationCommandTypes } from "discord.js/typings/enums";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
+import { randomizeArray } from "../classes/randomizer";
 import { syncDB } from "../intervals/syncdb";
 
 const commandData: ApplicationCommandData = {
@@ -53,7 +54,7 @@ export default class Test extends Command {
             //give log not given away key
             ctx.editReply({embeds: [], components: [], content: `Unable to find any further winners`})
         } else {
-            users = users.sort(() => Math.random() > 0.5 ? 1 : -1);
+            users = randomizeArray(users);
             let winners = users.splice(0, 1)
             await ctx.sql.query(`UPDATE prizes SET user_id='${winners[0]}', changed=${Date.now()} WHERE user_id='${user_id}'`)
             let dms_closed = []

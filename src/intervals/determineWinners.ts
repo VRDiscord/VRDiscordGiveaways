@@ -1,6 +1,7 @@
 import { GiveawayClient } from "../classes/client";
 import pg from "pg"
 import { Message, MessageAttachment, MessageEmbed, NewsChannel, TextChannel } from "discord.js";
+import { randomizeArray } from "../classes/randomizer";
 
 export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
     let expired = await sql.query(`SELECT * FROM giveaways WHERE duration <= ${Date.now()} AND NOT rolled`)
@@ -14,7 +15,7 @@ export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
             return
         }
         await sql.query(`UPDATE giveaways SET rolled=TRUE WHERE id='${giveaway.id}'`)
-        let winners = users.sort(() => Math.random() > 0.5 ? 1 : -1).splice(0, giveaway.winners)
+        let winners = randomizeArray(users).splice(0, giveaway.winners)
         let channel = await client.channels.fetch(giveaway.channel_id).catch(() => null)
         let message: Message | undefined
         if(channel instanceof TextChannel || channel instanceof NewsChannel) {
