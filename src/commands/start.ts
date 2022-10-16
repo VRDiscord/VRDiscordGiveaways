@@ -1,39 +1,38 @@
-import { ApplicationCommandData, MessageEmbed } from "discord.js";
-import { ApplicationCommandTypes } from "discord.js/typings/enums";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, Colors, EmbedBuilder } from "discord.js";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
 import request from "centra"
 
 const commandData: ApplicationCommandData = {
-    type: ApplicationCommandTypes.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     name: "start",
     description: "Starts a giveaway",
     options: [{
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "duration",
         description: "How long the giveaway should wait to determine winners (e.g. 2m for 2 minutes)",
         required: true
     }, {
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "prize-description",
         description: "The description of the prize (e.g. 20 keys)",
         required: true
     }, {
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "prize_attachment_url",
         description: "Url of a text file uploaded to discord with keys sepperated by \\n",
         required: true
     }, {
-        type: "INTEGER",
+        type: ApplicationCommandOptionType.Integer,
         name: "winners",
         description: "How many winners should be determined",
         required: true
     }, {
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "host",
         description: "Who hosts the giveaway",
     },{
-        type: "ROLE",
+        type: ApplicationCommandOptionType.Role,
         name: "mention",
         description: "Who to mention when the giveaway has started",
     }]
@@ -74,8 +73,8 @@ export default class Test extends Command {
 
         if(prizes.length > 1 && prizes.length !== winners) return ctx.error(`When giving more than one prize the number of prizes must match the number of winners (${prizes.length})`)
     
-        let embed = new MessageEmbed()
-        .setColor("AQUA")
+        let embed = new EmbedBuilder()
+        .setColor(Colors.Aqua)
         .setTitle(`New Giveaway by ${host}`)
         .setDescription(`**Prize** ${description}\n**Winners** ${winners}\n**Ends** <t:${Math.floor((Date.now() + duration)/1000)}:R>`)
         .setFooter({text: "Please make sure your direct messages are open before the givaway ends. The prize will be sent to you if you are chosen as a winner."})
@@ -91,8 +90,8 @@ export default class Test extends Command {
 
         ctx.client.giveawayCache.set(id.id, [])
 
-        let result = new MessageEmbed()
-        .setColor("AQUA")
+        let result = new EmbedBuilder()
+        .setColor(Colors.Aqua)
         .setTitle(`Giveaway started by ${host}`)
         .setDescription(`**Prize**: ${description}`)
         .setFooter({text: `ID: ${id!.id}`})

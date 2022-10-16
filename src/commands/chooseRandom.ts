@@ -1,15 +1,14 @@
-import { ApplicationCommandData, MessageEmbed, Snowflake } from "discord.js";
-import { ApplicationCommandTypes } from "discord.js/typings/enums";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, Snowflake } from "discord.js";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
 import { randomizeArray } from "../classes/randomizer";
 
 const commandData: ApplicationCommandData = {
-    type: ApplicationCommandTypes.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     name: "chooserandom",
     description: "Chooses a random user that has not won",
     options: [{
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "message_id",
         description: "The id of the giveaway message",
         required: true

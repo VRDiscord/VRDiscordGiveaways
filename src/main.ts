@@ -1,4 +1,4 @@
-import { ApplicationCommand, CommandInteraction, GuildMember, Intents } from "discord.js"
+import { ApplicationCommand, ChannelType, CommandInteraction, GuildMember, IntentsBitField } from "discord.js"
 import { readFileSync, existsSync, readdirSync } from "fs"
 import { GiveawayClient } from "./classes/client"
 import { CommandContext } from "./classes/commandContext"
@@ -24,22 +24,22 @@ const token = process.env["DISCORD_TOKEN"]
     , clientId = `${Buffer.from((token ?? "").split('.')[0] ?? "", 'base64')}`
 
 const client = new GiveawayClient({
-    intents: new Intents([
-        "DIRECT_MESSAGES",
-        "DIRECT_MESSAGE_REACTIONS",
-        "DIRECT_MESSAGE_TYPING",
-        "GUILDS", "GUILD_BANS",
-        "GUILD_EMOJIS_AND_STICKERS",
-        "GUILD_INTEGRATIONS",
-        "GUILD_INVITES",
-        "GUILD_MEMBERS",
-        "GUILD_MESSAGES",
-        "GUILD_MESSAGE_REACTIONS",
-        "GUILD_MESSAGE_TYPING",
-        "GUILD_PRESENCES",
-        "GUILD_SCHEDULED_EVENTS",
-        "GUILD_VOICE_STATES",
-        "GUILD_WEBHOOKS"
+    intents: new IntentsBitField([
+        "DirectMessages",
+        "DirectMessageReactions",
+        "DirectMessageTyping",
+        "Guilds", "GuildBans",
+        "GuildEmojisAndStickers",
+        "GuildIntegrations",
+        "GuildInvites",
+        "GuildMembers",
+        "GuildMessages",
+        "GuildMessageReactions",
+        "GuildMessageTyping",
+        "GuildPresences",
+        "GuildScheduledEvents",
+        "GuildVoiceStates",
+        "GuildWebhooks"
 ])})
 
 
@@ -91,8 +91,8 @@ setInterval( giveawayController, 1000*60 )
 
 client.on("interactionCreate", async (interaction): Promise<any> => {
 
-    if(interaction.isApplicationCommand()) {
-        if(interaction.channel?.type === "DM" && interaction.type !== "PING" && interaction.type !== "APPLICATION_COMMAND_AUTOCOMPLETE")
+    if(interaction.isCommand() && interaction.isChatInputCommand()) {
+        if(interaction.channel?.type === ChannelType.DM)
         return (interaction as CommandInteraction).reply({content: "You can't use commands in DMs"})
         const command = client.commands.get(interaction.commandName)
         if(!command) return

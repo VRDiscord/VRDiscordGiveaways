@@ -1,14 +1,13 @@
-import { ApplicationCommandData, Collection, MessageAttachment, MessageEmbed } from "discord.js";
-import { ApplicationCommandTypes } from "discord.js/typings/enums";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, Collection, Colors, EmbedBuilder } from "discord.js";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
 
 const commandData: ApplicationCommandData = {
-    type: ApplicationCommandTypes.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     name: "viewhandout",
     description: "Shows the status of a handout",
     options: [{
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "message_id",
         description: "The message id of the handout",
         required: false
@@ -27,16 +26,15 @@ export default class Test extends Command {
         let id = ctx.arguments.get("message_id")?.value?.toString()
         if(id) {
             let res = await ctx.sql.query(`SELECT * FROM freekeys WHERE id=$1`, [id]).catch(() => null)
-
             if(!res || !res.rows.length) return ctx.error("Unable to find that handout")
 
             let claimed = res.rows.filter(r => r.user_id)
             let unclaimed = res.rows.filter(r => !r.user_id)
 
-            let file = new MessageAttachment(Buffer.from(`Unclaimed keys (${unclaimed.length})\n-----------------${"-".repeat((unclaimed.length + "").length)}\n\n${unclaimed.map(r => r.prize).join("\n")}\n\n\nClaimed keys (${claimed.length})\n---------------${"-".repeat((claimed.length + "").length)}\n\n${claimed.map(r => `${r.prize} || ${r.user_id}`).join("\n")}`), "keys.txt")
+            let file = new AttachmentBuilder(Buffer.from(`Unclaimed keys (${unclaimed.length})\n-----------------${"-".repeat((unclaimed.length + "").length)}\n\n${unclaimed.map(r => r.prize).join("\n")}\n\n\nClaimed keys (${claimed.length})\n---------------${"-".repeat((claimed.length + "").length)}\n\n${claimed.map(r => `${r.prize} || ${r.user_id}`).join("\n")}`), {name: "keys.txt"})
 
-            let embed = new MessageEmbed()
-            .setColor("AQUA")
+            let embed = new EmbedBuilder()
+            .setColor(Colors.Aqua)
             .setTitle("Handout info:")
             .setDescription(`[This handout](https://discord.com/channels/${ctx.interaction.guildId}/${res.rows[0].channel_id}/${res.rows[0].id})`)
             .addFields([
@@ -51,9 +49,9 @@ export default class Test extends Command {
             let i = 0;
             let desc = `${unique.map((r, k) => `**${++i}** [click here](https://discord.com/channels/${ctx.interaction.guildId}/${r.channel_id}/${r.id}) ${res.rows.filter(ro => ro.id === k && ro.user_id).length}/${res.rows.filter(ro => ro.id === k).length} keys given out`).join("\n")}`
 
-            if(desc.length > 4000) return ctx.reply({content: "Attached below", files: [new MessageAttachment(Buffer.from(desc), "giveaways.txt")], ephemeral: true})
-            let embed = new MessageEmbed()
-            .setColor("AQUA")
+            if(desc.length > 4000) return ctx.reply({content: "Attached below", files: [new AttachmentBuilder(Buffer.from(desc), {name: "giveaways.txt"})], ephemeral: true})
+            let embed = new EmbedBuilder()
+            .setColor(Colors.Aqua)
             .setTitle("Handouts")
             .setDescription(desc)
         

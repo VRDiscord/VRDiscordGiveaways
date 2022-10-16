@@ -1,15 +1,14 @@
-import { ApplicationCommandData, MessageAttachment } from "discord.js";
-import { ApplicationCommandTypes } from "discord.js/typings/enums";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, EmbedBuilder } from "discord.js";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
 import util from "util"
 
 const commandData: ApplicationCommandData = {
-    type: ApplicationCommandTypes.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     name: "sql",
     description: "Query the database",
     options: [{
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "query",
         description: "The query you want to query",
         required: true
@@ -31,7 +30,7 @@ export default class Test extends Command {
         let res = await ctx.sql.query(query).catch(e => e)
         let text = util.inspect(res, {depth: 5})
         if(text.length > 1900) {
-            let file = new MessageAttachment(Buffer.from(text), "result.txt")
+            let file = new AttachmentBuilder(Buffer.from(text), {name: "result.txt"})
             ctx.reply({files: [file], content: "Result attached below"})
         } else {
             ctx.reply({content: `\`\`\`json\n${text}\n\`\`\``})

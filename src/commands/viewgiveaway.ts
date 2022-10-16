@@ -1,14 +1,13 @@
-import { ApplicationCommandData, MessageAttachment, MessageEmbed } from "discord.js";
-import { ApplicationCommandTypes } from "discord.js/typings/enums";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, Colors, EmbedBuilder } from "discord.js";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
 
 const commandData: ApplicationCommandData = {
-    type: ApplicationCommandTypes.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     name: "viewgiveaway",
     description: "Shows the status of a giveaway",
     options: [{
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "message_id",
         description: "The message id of the giveaway"
     }]
@@ -29,8 +28,8 @@ export default class Test extends Command {
 
             if(!res || !res.rows.length) return ctx.error("Unable to find that giveaway")
 
-            let embed = new MessageEmbed()
-            .setColor("AQUA")
+            let embed = new EmbedBuilder()
+            .setColor(Colors.Aqua)
             .setTitle("Giveaway info:")
             .setDescription(`[This giveaway](https://discord.com/channels/${ctx.interaction.guildId}/${res.rows[0].channel_id}/${res.rows[0].id})`)
             .addFields([
@@ -45,9 +44,9 @@ export default class Test extends Command {
             let res = await ctx.sql.query(`SELECT * FROM giveaways`)
             let desc = `${res.rows.map((r, i) => `**${i+1}** ${r.rolled ? "✅" : "🕐"} [click here](https://discord.com/channels/${ctx.interaction.guildId}/${r.channel_id}/${r.id}) <t:${Math.floor(r.duration/1000)}:R> **${r.users.length}** entries`).join("\n")}`
 
-            if(desc.length > 4000) return ctx.reply({content: "Attached below", files: [new MessageAttachment(Buffer.from(desc), "giveaways.txt")], ephemeral: true})
-            let embed = new MessageEmbed()
-            .setColor("AQUA")
+            if(desc.length > 4000) return ctx.reply({content: "Attached below", files: [new AttachmentBuilder(Buffer.from(desc), {name: "giveaways.txt"})], ephemeral: true})
+            let embed = new EmbedBuilder()
+            .setColor(Colors.Aqua)
             .setTitle("Giveaways")
             .setDescription(desc)
         

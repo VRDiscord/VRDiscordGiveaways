@@ -1,14 +1,13 @@
-import { ApplicationCommandData, Message, MessageAttachment, NewsChannel, TextChannel } from "discord.js";
-import { ApplicationCommandTypes } from "discord.js/typings/enums";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, Message, AttachmentBuilder, NewsChannel, TextChannel } from "discord.js";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
 
 const commandData: ApplicationCommandData = {
-    type: ApplicationCommandTypes.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     name: "delete",
     description: "Silently deletes a giveaway",
     options: [{
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "message_id",
         description: "The id of the giveaway message",
         required: true
@@ -28,7 +27,7 @@ export default class Test extends Command {
         let res = await ctx.sql.query(`DELETE FROM giveaways WHERE id=$1 RETURNING *`, [id])
         let keys = await ctx.sql.query(`DELETE FROM prizes WHERE id=$1 RETURNING *`, [id])
         let file
-        if(keys.rowCount) file = new MessageAttachment(Buffer.from(keys.rows.map(r => r.prize).join("\n")), `${id}_keys.txt`)
+        if(keys.rowCount) file = new AttachmentBuilder(Buffer.from(keys.rows.map(r => r.prize).join("\n")), {name: `${id}_keys.txt`})
         ctx.reply({content: `Ended giveaway with id \`${res.rows[0].id}\``, files: file ? [file] : undefined, ephemeral: true})
 
         let channel = await ctx.client.channels.fetch(res.rows[0].channel_id).catch(() => null)

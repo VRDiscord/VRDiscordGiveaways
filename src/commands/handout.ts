@@ -1,20 +1,19 @@
-import { ApplicationCommandData, MessageEmbed } from "discord.js";
-import { ApplicationCommandTypes } from "discord.js/typings/enums";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, Colors, EmbedBuilder } from "discord.js";
 import { Command } from "../classes/command";
 import { CommandContext } from "../classes/commandContext";
 import request from "centra"
 
 const commandData: ApplicationCommandData = {
-    type: ApplicationCommandTypes.CHAT_INPUT,
+    type: ApplicationCommandType.ChatInput,
     name: "handout",
     description: "Creates a message where members can just get a key",
     options: [{
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "description",
         description: "The description of what the prize is",
         required: true
     },{
-        type: "STRING",
+        type: ApplicationCommandOptionType.String,
         name: "prize_attachment_url",
         description: "The link of the file with the keys",
         required: true
@@ -36,8 +35,8 @@ export default class Test extends Command {
         }).catch(() => [])
         if(!prizes.length) return ctx.error("Invalid file")
 
-        let embed = new MessageEmbed()
-        .setColor("AQUA")
+        let embed = new EmbedBuilder()
+        .setColor(Colors.Aqua)
         .setTitle("New Handout")
         .setDescription(`${ctx.arguments.get("description")?.value ?? "Freebies"}\n\nClick the button below to receive a key.`)
 
