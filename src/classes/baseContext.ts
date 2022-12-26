@@ -1,4 +1,4 @@
-import { EmbedBuilder, Message } from "discord.js";
+import { ActionRowData, EmbedBuilder, Message, MessageActionRowComponentData } from "discord.js";
 import { GiveawayClient } from "./client";
 import pg from "pg"
 
@@ -10,8 +10,8 @@ export class BaseContext{
         this.sql = sql
     }
 
-    async log(message: string | EmbedBuilder | EmbedBuilder[]): Promise<Message | null> {
-        return await this.client.log(message)
+    async log(message: string | EmbedBuilder | EmbedBuilder[], components?: ActionRowData<MessageActionRowComponentData>[]): Promise<Message | null> {
+        return await this.client.log(message, undefined, components)
     }
 
     getTime(string: string): number{

@@ -9,7 +9,7 @@ export default class Test extends Button {
     constructor() {
         super()
         this.name = "deny"
-        this.regex = /deny_\d{17,19}/
+        this.regex = /deny_\d{17,20}/
         this.staffOnly = false
     }
     async run(ctx: ButtonContext): Promise<any> {
@@ -46,10 +46,12 @@ export default class Test extends Button {
             let dms_closed = []
 
             
+            const probability = giveaway.rows[0].winners / giveaway.rows[0].users.length * 10000
+
             let embed = new EmbedBuilder()
             .setTitle("🎉 You Won 🎉")
             .setColor(Colors.Yellow)
-            .setDescription(`You won in [this giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.rows[0].channel_id}/${id}). Do you want to accept your prize?`)
+            .setDescription(`You won in [the giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.rows[0].channel_id}/${id}) "${giveaway.rows[0].name}".\nYour chance of winning was ≈${Math.floor(probability)/100}%.\nDo you want to accept your prize?`)
 
             let components = [{
                 type: 1,

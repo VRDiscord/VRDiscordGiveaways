@@ -10,7 +10,6 @@ import { rerollPrizes } from "./intervals/rerollPrizes"
 
 const RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*(.*)?\s*$/
 
-console.log(process.env)
 if (existsSync(`${process.cwd()}/.env`))
     for (const line of readFileSync(`${process.cwd()}/.env`, 'utf8').split(/[\r\n]|\r\n/)) {
         let [, key, value] = line.match(RE_INI_KEY_VAL) || []
@@ -71,6 +70,7 @@ connection.connect().catch(console.error)
 const keepAlive = async () => {
     //await connection.query("SELECT * FROM giveaways LIMIT 1").then(console.log).catch(() => null)
     //let res = await connection.query("DROP TABLE giveaways")
+    //console.log(await connection.query("ALTER TABLE giveaways ADD name VARCHAR(1000) NOT NULL DEFAULT ''"))
     await connection.query("CREATE TABLE IF NOT EXISTS giveaways (id varchar(21) not null primary key, duration bigint not null, users text[] not null default '{}', won_users text[] default '{}', winners int not null, channel_id varchar(21) not null, rolled boolean not null)")
     await connection.query("CREATE TABLE IF NOT EXISTS prizes (index SERIAL, id varchar(21) not null, prize varchar(255) not null, user_id varchar(21), changed bigint)")
     await connection.query("CREATE TABLE IF NOT EXISTS freekeys (index SERIAL, id varchar(21) not null, prize varchar(255) not null, user_id varchar(21), channel_id varchar(21) not null)")
