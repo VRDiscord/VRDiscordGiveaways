@@ -48,6 +48,6 @@ export default class Test extends Command {
         }
         ctx.reply({content: `Giveaway extended by ${duration} hours`})
 
-        ctx.client.log(`${ctx.interaction.user.username}#${ctx.interaction.user.discriminator} (\`${ctx.interaction.user.id}\`) extended the giveaway by ${duration} hours`)
+        ctx.client.log(`${ctx.interaction.user.tag} (\`${ctx.interaction.user.id}\`) extended the giveaway "${keys.rows[0].name}" \`${id}\` by ${duration} hours`, undefined, [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${keys.rows[0].channel_id}/${keys.rows[0].id}`}]}])
     }
 }

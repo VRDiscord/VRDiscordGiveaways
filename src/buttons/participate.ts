@@ -17,7 +17,21 @@ export default class Test extends Button {
         } 
         if(!ctx.client.giveawayCache.get(ctx.interaction.message.id)) return ctx.error("This giveaway has ended")
         if(ctx.client.blacklisted.includes(ctx.interaction.user.id)) return ctx.error("You have been blacklisted from giveaways")
-        if(ctx.client.giveawayCache.get(ctx.interaction.message.id)?.includes(ctx.interaction.member?.user.id ?? "")) return ctx.error("You are already a participant")
+        if(ctx.client.giveawayCache.get(ctx.interaction.message.id)?.includes(ctx.interaction.member?.user.id ?? "")) {
+            return ctx.reply({
+                content: `You are already a participant.\nThere are currently \`${ctx.client.giveawayCache.get(ctx.interaction.message.id)?.length ?? 1}\` participants`,
+                components: [{
+                    type: 1,
+                    components: [{
+                        type: 2,
+                        style: 4,
+                        label: "Leave Giveaway",
+                        custom_id: `leave_${ctx.interaction.message.id}`
+                    }]
+                }],
+                ephemeral: true
+            })
+        }
         ctx.client.giveawayCache.set(ctx.interaction.message.id, [...ctx.client.giveawayCache.get(ctx.interaction.message.id)!, ctx.member!.id])
         ctx.reply({content: "You are now a participant of this giveaway", ephemeral: true})
     }
