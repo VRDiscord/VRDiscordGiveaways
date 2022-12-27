@@ -2,6 +2,7 @@ import { GiveawayClient } from "../classes/client";
 import pg from "pg"
 import { Message, AttachmentBuilder, EmbedBuilder, NewsChannel, TextChannel, Colors } from "discord.js";
 import { randomizeArray } from "../classes/randomizer";
+import { syncDB } from "./syncdb";
 
 export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
     let expired = await sql.query(`SELECT * FROM giveaways WHERE duration <= ${Date.now()} AND NOT rolled`)
@@ -9,13 +10,7 @@ export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
         let pending_users = await sql.query(`SELECT * FROM prizes WHERE user_id IS NOT NULL`)
         // filters out pending users for other giveaways
         let users = (giveaway.users as string[]).filter((u: string) => !giveaway.won_users.includes(u)).filter(r => !pending_users.rows.find(ro => ro.user_id === r))
-        if(!users.length) {
-            client.log(`Giveaway "${giveaway.name}" \`${giveaway.id}\` ended with no entries`)
-            await sql.query(`UPDATE giveaways SET rolled=TRUE WHERE id='${giveaway.id}'`)
-            return
-        }
-        await sql.query(`UPDATE giveaways SET rolled=TRUE WHERE id='${giveaway.id}'`)
-        let winners = randomizeArray(users).splice(0, giveaway.winners)
+        
         let channel = await client.channels.fetch(giveaway.channel_id).catch(() => null)
         let message: Message | undefined
         if(channel instanceof TextChannel || channel instanceof NewsChannel) {
@@ -33,6 +28,14 @@ export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
                 }]
             }).catch(() => null)
         }
+
+        if(!users.length) {
+            client.log(`Giveaway "${giveaway.name}" \`${giveaway.id}\` ended with no entries`)
+            await sql.query(`UPDATE giveaways SET rolled=TRUE WHERE id='${giveaway.id}'`)
+            return
+        }
+        await sql.query(`UPDATE giveaways SET rolled=TRUE WHERE id='${giveaway.id}'`)
+        let winners = randomizeArray(users).splice(0, giveaway.winners)
 
         let dms_closed: string[] = []
 
