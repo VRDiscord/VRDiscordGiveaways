@@ -51,7 +51,9 @@ export default class Test extends Button {
             let embed = new EmbedBuilder()
             .setTitle("🎉 You Won 🎉")
             .setColor(Colors.Yellow)
-            .setDescription(`You won in [the giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.rows[0].channel_id}/${id}) "${giveaway.rows[0].name}".\nYour chance of winning was ≈${Math.floor(probability)/100}%.\nDo you want to accept your prize?`)
+            .setDescription(`You won in [the giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.rows[0].channel_id}/${id}) "${giveaway.rows[0].name}".\n**Prize** ${giveaway.rows[0].prize_description}\nYour chance of winning was ≈${Math.floor(probability)/100}%.\nDo you want to accept your prize?`)
+            .setFooter({text: "VR Discord Giveaways", iconURL: ctx.client.user?.displayAvatarURL()})
+    
 
             let components = [{
                 type: 1,

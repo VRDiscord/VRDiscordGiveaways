@@ -62,7 +62,8 @@ export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
         let embed = new EmbedBuilder()
         .setTitle("🎉 You Won 🎉")
         .setColor(Colors.Yellow)
-        .setDescription(`You won in [the giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}) "${giveaway.name}".\nYour chance of winning was ≈${Math.floor(probability)/100}%.\nDo you want to accept your prize?`)
+        .setDescription(`You won in [the giveaway](https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}) "${giveaway.name}".\n**Prize** ${giveaway.prize_description}\nYour chance of winning was ≈${Math.floor(probability)/100}%.\nDo you want to accept your prize?`)
+        .setFooter({text: "VR Discord Giveaways", iconURL: client.user?.displayAvatarURL()})
 
         let components = [{
             type: 1,

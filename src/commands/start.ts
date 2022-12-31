@@ -92,7 +92,7 @@ export default class Test extends Command {
         let id = await ctx.interaction.channel?.send({content: !mention ? undefined : mention.id === ctx.interaction.guildId ? "@everyone" : `<@&${mention.id}>`, embeds: [embed], components: button}).catch(console.error)
         if(!id?.id) return ctx.error("Unable to start giveaway")
 
-        let req = await ctx.sql.query(`INSERT INTO giveaways (id, duration, winners, channel_id, rolled, name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`, [id.id, Date.now()+duration, winners, id.channelId, false, title]).catch(console.error)
+        let req = await ctx.sql.query(`INSERT INTO giveaways (id, duration, winners, channel_id, rolled, name, prize_description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`, [id.id, Date.now()+duration, winners, id.channelId, false, title, description]).catch(console.error)
         if(!req) {
             id?.delete()
             return ctx.error("Unable to start giveaway")
