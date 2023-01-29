@@ -5,7 +5,7 @@ import { randomizeArray } from "../classes/randomizer";
 import { syncDB } from "./syncdb";
 
 export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
-    let expired = await sql.query(`SELECT * FROM giveaways WHERE duration <= ${Date.now()} AND NOT rolled`)
+    let expired = await sql.query(`SELECT * FROM giveaways WHERE duration <= $1 AND NOT rolled`, [Date.now()])
     for(let giveaway of expired.rows) {
         let pending_users = await sql.query(`SELECT * FROM prizes WHERE user_id IS NOT NULL`)
         // filters out pending users for other giveaways
@@ -31,15 +31,15 @@ export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
 
         if(!users.length) {
             client.log(`Giveaway "${giveaway.name}" \`${giveaway.id}\` ended with no entries`)
-            await sql.query(`UPDATE giveaways SET rolled=TRUE WHERE id='${giveaway.id}'`)
+            await sql.query(`UPDATE giveaways SET rolled=TRUE WHERE id=$1`, [giveaway.id])
             return
         }
-        await sql.query(`UPDATE giveaways SET rolled=TRUE WHERE id='${giveaway.id}'`)
+        await sql.query(`UPDATE giveaways SET rolled=TRUE WHERE id=$1`, [giveaway.id])
         let winners = randomizeArray(users).splice(0, giveaway.winners)
 
         let dms_closed: string[] = []
 
-        let keys = await sql.query(`DELETE FROM prizes WHERE id='${giveaway.id}' AND user_id IS NULL RETURNING *`)
+        let keys = await sql.query(`DELETE FROM prizes WHERE id=$1 AND user_id IS NULL RETURNING *`, [giveaway.id])
 
 
         const values = winners.map((p, i) => `(DEFAULT, '${giveaway.id}', '${keys.rows[i]?.prize ?? keys.rows[0].prize}', '${p}', ${Date.now()})`)
@@ -88,7 +88,7 @@ export async function determineWinner(sql: pg.Pool, client: GiveawayClient){
                 if(users.length) {
                     let newid = users.splice(0, 1)[0]
                     winners.push(newid)
-                    await sql.query(`UPDATE prizes SET user_id='${newid}' WHERE user_id='${id}'`)
+                    await sql.query(`UPDATE prizes SET user_id=$1 WHERE user_id=$2`, [newid, id])
                 } else {
                     dms_closed.push(id)
                 }

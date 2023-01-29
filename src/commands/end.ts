@@ -25,8 +25,8 @@ export default class Test extends Command {
         this.description = `Ends a giveaway`
     }
     async run(ctx: CommandContext): Promise<any> {
-        let id = ctx.arguments.get("message_id")?.value
-        const updated = await ctx.sql.query(`UPDATE giveaways SET duration=${Date.now()-1} WHERE id=$1 RETURNING *`, [id])
+        const id = ctx.interaction.options.getString("message_id", true)
+        const updated = await ctx.sql.query(`UPDATE giveaways SET duration=$2 WHERE id=$1 RETURNING *`, [id, (Date.now()-1)])
         ctx.reply({content: "Ending giveaway...", ephemeral: true})
         await syncDB(ctx.sql, ctx.client)
         await determineWinner(ctx.sql, ctx.client)
