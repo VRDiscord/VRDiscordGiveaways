@@ -23,7 +23,7 @@ export default class Test extends Command {
         this.description = `Removes all keys from a handout process`
     }
     async run(ctx: CommandContext): Promise<any> {
-        let id = ctx.arguments.get("message_id")?.value?.toString() ?? ""
+        const id = ctx.interaction.options.getString("message_id", true)
         let keys = await ctx.sql.query(`DELETE FROM prizes WHERE id=$1 AND user_id IS NOT NULL RETURNING *`, [id])
         if(!keys.rowCount) return ctx.error("No keys for that giveaway found")
         let file = new AttachmentBuilder(Buffer.from(keys.rows.map(r => r.prize).join("\n")), {name: `${id}_keys.txt`})

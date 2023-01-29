@@ -28,12 +28,12 @@ export default class Test extends Command {
         this.description = `Extends a giveaway`
     }
     async run(ctx: CommandContext): Promise<any> {
-        let id = ctx.arguments.get("message_id")?.value?.toString() ?? ""
-        let duration = Number(ctx.arguments.get("duration")?.value)
+        const id = ctx.interaction.options.getString("message_id", true)
+        const duration = ctx.interaction.options.getNumber("duration", true)
         if(duration < 0) return ctx.error("Please give a positive number")
         let giveaway = await ctx.sql.query(`SELECT * FROM giveaways WHERE id=$1 AND NOT rolled`, [id])
         if(!giveaway.rowCount) return ctx.error("There is no active giveaway with that id")
-        let keys = await ctx.sql.query(`UPDATE giveaways SET duration = ${Number(giveaway.rows[0].duration)+(duration*60*60*1000)} WHERE id=$1 AND NOT rolled RETURNING *`, [id]).catch(() => null)
+        let keys = await ctx.sql.query(`UPDATE giveaways SET duration = $2 WHERE id=$1 AND NOT rolled RETURNING *`, [id, (Number(giveaway.rows[0].duration)+(duration*60*60*1000))]).catch(() => null)
         if(!keys?.rowCount) return ctx.error("There is no active giveaway with that id")
         let channel = await ctx.client.channels.fetch(keys.rows[0].channel_id)
         if(channel?.isTextBased()) {

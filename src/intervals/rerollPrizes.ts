@@ -12,7 +12,7 @@ export async function rerollPrizes(sql: pg.Pool, client: GiveawayClient){
         let giveaway = giveaways.rows.find(r => r.id === key.id)
         let users = randomizeArray(giveaway.users);
         let winners = users.splice(0, 1)
-        await sql.query(`UPDATE prizes SET user_id='${winners[0]}', changed=${Date.now()} WHERE user_id='${key.user_id}'`)
+        await sql.query(`UPDATE prizes SET user_id=$1, changed=$2 WHERE user_id=$3`, [winners[0], Date.now(), key.user_id])
         let dms_closed = []
 
         
@@ -43,7 +43,7 @@ export async function rerollPrizes(sql: pg.Pool, client: GiveawayClient){
                 if(users.length) {
                     let newid = users.splice(0, 1)[0]
                     winners.push(newid)
-                    await sql.query(`UPDATE prizes SET user_id='${newid}' WHERE user_id='${uid}'`)
+                    await sql.query(`UPDATE prizes SET user_id=$1 WHERE user_id=$2`, [newid, uid])
                 } else {
                     dms_closed.push(uid)
                 }

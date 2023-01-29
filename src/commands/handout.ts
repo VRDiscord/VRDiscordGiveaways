@@ -26,7 +26,7 @@ export default class Test extends Command {
         super(commandData)
         this.name = commandData.name
         this.staffOnly = true
-        this.description = `Deletes a giveaway`
+        this.description = `Starts a handout process`
     }
     async run(ctx: CommandContext): Promise<any> {
         let prizes = await request(ctx.arguments.get("prize_attachment_url")?.value?.toString()!, "GET").send().then(res => {
@@ -52,8 +52,8 @@ export default class Test extends Command {
 
         let res = await ctx.interaction.channel?.send({embeds: [embed], components}).catch(() => null)
         if(!res) return ctx.error("Unable to create message")
-        let query = `INSERT INTO freekeys VALUES ${prizes.map(p => `(DEFAULT, '${res!.id}', '${p}', NULL, '${ctx.interaction.channelId}')`).join(", ")}`
-        ctx.sql.query(query)
+        let query = `INSERT INTO freekeys (id, channel_id, prize) VALUES ${prizes.map((_, i) => `($1, $2, $${i+3})`).join(", ")}`
+        ctx.sql.query(query, [res!.id, ctx.interaction.channelId, ...prizes])
 
         ctx.reply({content: "Created handout message", ephemeral: true})
     }
