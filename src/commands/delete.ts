@@ -23,7 +23,7 @@ export default class Test extends Command {
         this.description = `Deletes a giveaway`
     }
     async run(ctx: CommandContext): Promise<any> {
-        let id = ctx.arguments.get("message_id")?.value?.toString() ?? ""
+        const id = ctx.interaction.options.getString("message_id", true)
         let res = await ctx.sql.query(`DELETE FROM giveaways WHERE id=$1 RETURNING *`, [id])
         let keys = await ctx.sql.query(`DELETE FROM prizes WHERE id=$1 RETURNING *`, [id])
         let file

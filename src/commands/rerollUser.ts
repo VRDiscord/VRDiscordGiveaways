@@ -30,33 +30,36 @@ export default class Test extends Command {
         this.description = `Rerolls a participant`
     }
     async run(ctx: CommandContext): Promise<any> {
-        let user_id = ctx.arguments.get("user")?.value?.toString() ?? ""
-        let id = ctx.arguments.get("message_id")?.value?.toString() ?? ""
+        const user = ctx.interaction.options.getUser("user", true)
+        const id = ctx.interaction.options.getString("message_id", true)
 
         await ctx.deferReply({ephemeral: false})
-        let giveaway = await ctx.sql.query(`SELECT * FROM giveaways WHERE id='${id}'`)
-        let key = await ctx.sql.query(`SELECT * FROM prizes WHERE id='${id}'`)
+        let giveaway = await ctx.sql.query(`SELECT * FROM giveaways WHERE id=$1`, [id])
+        let key = await ctx.sql.query(`SELECT * FROM prizes WHERE id=$1`, [id])
         if(!key.rows.length) {
             return ctx.editReply({content: "Unable to find prize", components: [], embeds: []})
         }
         let pending_users = await ctx.sql.query(`SELECT * FROM prizes WHERE user_id IS NOT NULL`)
         // filters out pending users for other giveaways
-        let users = giveaway.rows[0].users.filter((u: string) => !key.rows.find(r => r.user_id === u)).filter((u: string) => !giveaway.rows[0].won_users.includes(u)).filter((r: Snowflake) => !pending_users.rows.find(ro => ro.user_id === r))
+        let users: string[] = giveaway.rows[0].users
+            .filter((u: string) => !key.rows.find(r => r.user_id === u))
+            .filter((u: string) => !giveaway.rows[0].won_users.includes(u))
+            .filter((r: Snowflake) => !pending_users.rows.find(ro => ro.user_id === r))
 
         ctx.editReply({embeds: [], components: [], content: `Rerolling...`})
         
         if(!users.length) {
-            let q = `DELETE FROM prizes WHERE user_id='${user_id}' AND id='${id}' RETURNING *`
-            let left_over = await ctx.sql.query(q)
+            let q = `DELETE FROM prizes WHERE user_id=$1 AND id=$2 RETURNING *`
+            let left_over = await ctx.sql.query(q, [user.id, id])
             
-            ctx.log(`${ctx.interaction.user.tag} (\`${user_id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
+            ctx.log(`${ctx.interaction.user.tag} (\`${user.id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
             //give log not given away key
             ctx.editReply({embeds: [], components: [], content: `Unable to find any further winners`})
         } else {
             users = randomizeArray(users);
             let winners = users.splice(0, 1)
-            await ctx.sql.query(`UPDATE prizes SET user_id='${winners[0]}', changed=${Date.now()} WHERE user_id='${user_id}'`)
-            let dms_closed = []
+            await ctx.sql.query(`UPDATE prizes SET user_id=$1, changed=$2 WHERE user_id=$3`, [winners[0], Date.now(), user.id])
+            let dms_closed: string[] = []
             
             let embed = new EmbedBuilder()
             .setColor(Colors.Yellow)
@@ -86,7 +89,7 @@ export default class Test extends Command {
                     if(users.length) {
                         let newid = users.splice(0, 1)[0]
                         winners.push(newid)
-                        await ctx.sql.query(`UPDATE prizes SET user_id='${newid}' WHERE user_id='${uid}'`)
+                        await ctx.sql.query(`UPDATE prizes SET user_id=$1 WHERE user_id=$2`, [newid, uid])
                     } else {
                         dms_closed.push(uid)
                     }
@@ -94,10 +97,10 @@ export default class Test extends Command {
             }
 
             if(dms_closed.length) {
-                let q = `DELETE FROM prizes WHERE user_id IN (${dms_closed.map(u => `'${u}'`).join(", ")}) AND id='${id}' RETURNING *`
-                let left_over = await ctx.sql.query(q)
+                let q = `DELETE FROM prizes WHERE user_id IN (${dms_closed.map((_, i) => `$${i+2}`).join(", ")}) AND id=$1 RETURNING *`
+                let left_over = await ctx.sql.query(q, [id, ...dms_closed])
                 ctx.editReply({embeds: [], components: [], content: `Unable to find any further winners`})
-                ctx.log(`${ctx.interaction.user.tag} (\`${user_id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
+                ctx.log(`${ctx.interaction.user.tag} (\`${user.id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
             } else {
                 ctx.editReply({embeds: [], components: [], content: `Rerolled prize`})
             }
