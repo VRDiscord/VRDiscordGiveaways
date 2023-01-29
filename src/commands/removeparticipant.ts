@@ -29,14 +29,14 @@ export default class Test extends Command {
         this.description = `Removes a participant`
     }
     async run(ctx: CommandContext): Promise<any> {
-        let user_id = ctx.arguments.get("user")?.value?.toString() ?? ""
-        let id = ctx.arguments.get("message_id")?.value?.toString() ?? ""
+        const user = ctx.interaction.options.getUser("user", true)
+        const id = ctx.interaction.options.getString("message_id", true)
         if(!ctx.client.giveawayCache.has(id)) return ctx.error("Unable to find giveaway")
-        ctx.client.giveawayCache.set(id, ctx.client.giveawayCache.get(id)!.filter(u => u !== user_id))
+        ctx.client.giveawayCache.set(id, ctx.client.giveawayCache.get(id)!.filter(u => u !== user.id))
         syncDB(ctx.sql, ctx.client)
         const giveaway = await ctx.sql.query("SELECT * FROM giveaways WHERE id=$1", [id]).then(res => res.rows[0]).catch(console.error)
 
-        ctx.reply({content: `Removed the user <@${user_id}> (\`${user_id}\`) from the giveaway "${giveaway.name}" \`${id}\``, components: [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}`}]}]})
-        ctx.log(`${ctx.interaction.user.tag} removed the participant <@${user_id}> (\`${user_id}\`) from the giveaway "${giveaway.name}" \`${id}\``, [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}`}]}])
+        ctx.reply({content: `Removed the user <@${user.id}> (\`${user.id}\`) from the giveaway "${giveaway.name}" \`${id}\``, components: [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}`}]}]})
+        ctx.log(`${ctx.interaction.user.tag} removed the participant <@${user.id}> (\`${user.id}\`) from the giveaway "${giveaway.name}" \`${id}\``, [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}`}]}])
     }
 }

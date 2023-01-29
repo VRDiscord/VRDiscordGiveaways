@@ -24,9 +24,9 @@ export default class Test extends Command {
         this.description = `Chooses a random user`
     }
     async run(ctx: CommandContext): Promise<any> {
-        let id = ctx.arguments.get("message_id")?.value?.toString() ?? ""
+        const id = ctx.interaction.options.getString("message_id", true)
 
-        let giveaway = await ctx.sql.query(`SELECT * FROM giveaways WHERE id='${id}'`)
+        let giveaway = await ctx.sql.query(`SELECT * FROM giveaways WHERE id=$1`, [id])
         let pending_users = await ctx.sql.query(`SELECT * FROM prizes WHERE user_id IS NOT NULL`)
         let users = giveaway.rows[0].users.filter((u: string) => !giveaway.rows[0].won_users.includes(u)).filter((r: Snowflake) => !pending_users.rows.find(ro => ro.user_id === r))
         
