@@ -6,16 +6,10 @@ import pg from "pg"
 export class CommandContext extends BaseContext{
     interaction: ChatInputCommandInteraction
     member?: GuildMember
-    arguments: Collection<string, CommandInteractionOption>
     constructor(client: GiveawayClient, interaction: ChatInputCommandInteraction, member: GuildMember | undefined, sql: pg.Pool){
         super(client, sql)
         this.interaction = interaction
         this.member = member
-        this.arguments = new Collection(
-            this.interaction.options.data
-            .filter(v => v.type !== ApplicationCommandOptionType.Subcommand && v.type !== ApplicationCommandOptionType.SubcommandGroup)
-            .map(v => ([v.name, v]))
-        )
     }
 
     async reply(options: (InteractionReplyOptions)) {

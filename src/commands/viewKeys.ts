@@ -23,7 +23,7 @@ export default class Test extends Command {
         this.description = `Shows keys for a giveaway`
     }
     async run(ctx: CommandContext): Promise<any> {
-        let id = ctx.arguments.get("message_id")?.value?.toString() ?? ""
+        let id = ctx.interaction.options.getString("message_id", true)
         let keys = await ctx.sql.query(`SELECT * FROM prizes WHERE id=$1`, [id])
         if(!keys.rowCount) return ctx.error("No keys for that giveaway found")
         let file = new AttachmentBuilder(Buffer.from(keys.rows.map(r => `Prize: ${r.prize} || Pending User: ${r.user_id ?? "none"}`).join("\n")), {name: `${id}_keys.txt`})

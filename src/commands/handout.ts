@@ -13,9 +13,9 @@ const commandData: ApplicationCommandData = {
         description: "The description of what the prize is",
         required: true
     },{
-        type: ApplicationCommandOptionType.String,
-        name: "prize_attachment_url",
-        description: "The link of the file with the keys",
+        type: ApplicationCommandOptionType.Attachment,
+        name: "prize_attachment",
+        description: "The file with the keys",
         required: true
     }]
 }
@@ -29,7 +29,9 @@ export default class Test extends Command {
         this.description = `Starts a handout process`
     }
     async run(ctx: CommandContext): Promise<any> {
-        let prizes = await request(ctx.arguments.get("prize_attachment_url")?.value?.toString()!, "GET").send().then(res => {
+        const attachment = ctx.interaction.options.getAttachment("prize_attachment", true)
+        const description = ctx.interaction.options.getString("description", true)
+        let prizes = await request(attachment.url, "GET").send().then(res => {
             if(res.statusCode !== 200) return []
             return res.body.toString().split("\n").map(k => k.replace("\r", "")).filter(v => v)
         }).catch(() => [])
@@ -38,7 +40,7 @@ export default class Test extends Command {
         let embed = new EmbedBuilder()
         .setColor(Colors.Aqua)
         .setTitle("New Handout")
-        .setDescription(`${ctx.arguments.get("description")?.value ?? "Freebies"}\n\nClick the button below to receive a key.`)
+        .setDescription(`${description}\n\nClick the button below to receive a key.`)
 
         let components = [{
             type: 1,

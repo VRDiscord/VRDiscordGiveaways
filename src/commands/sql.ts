@@ -26,7 +26,7 @@ export default class Test extends Command {
     }
     async run(ctx: CommandContext): Promise<any> {
         if(!owner.includes(ctx.interaction.user.id)) return ctx.error("You can't use this command")
-        let query = ctx.arguments.get("query")?.value?.toString()!
+        let query = ctx.interaction.options.getString("query", true)
         let res = await ctx.sql.query(query).catch(e => e)
         let text = util.inspect(res, {depth: 5})
         if(text.length > 1900) {
