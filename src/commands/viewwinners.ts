@@ -22,7 +22,7 @@ export default class Test extends Command {
         this.description = `Shows winners`
     }
     async run(ctx: CommandContext): Promise<any> {
-        let id = ctx.arguments.get("message_id")?.value?.toString() ?? ""
+        let id = ctx.interaction.options.getString("message_id", true)
         let keys = await ctx.sql.query(`SELECT * FROM giveaways WHERE id=$1 AND rolled`, [id])
         if(!keys.rowCount) return ctx.error("No finished giveaways found from that id")
         if(!keys.rows[0].won_users.length) return ctx.error("No users have accepted their prize yet")

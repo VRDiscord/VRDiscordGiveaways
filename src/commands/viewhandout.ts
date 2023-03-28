@@ -23,7 +23,7 @@ export default class Test extends Command {
         this.description = `Shows a handout`
     }
     async run(ctx: CommandContext): Promise<any> {
-        let id = ctx.arguments.get("message_id")?.value?.toString()
+        let id = ctx.interaction.options.getString("message_id")
         if(id) {
             let res = await ctx.sql.query(`SELECT * FROM freekeys WHERE id=$1`, [id]).catch(() => null)
             if(!res || !res.rows.length) return ctx.error("Unable to find that handout")
