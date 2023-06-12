@@ -71,7 +71,7 @@ export default class Test extends Command {
         if(duration > 1000*60*60*24*365) ctx.error("You can't host a giveaway longer than a year")
         let description = ctx.interaction.options.getString("prize-description", true)
         let mention = ctx.interaction.options.getRole("mention")
-        let host = ctx.interaction.options.getString("host") ?? ctx.interaction.user.tag
+        let host = ctx.interaction.options.getString("host") ?? ctx.interaction.user.username
         let winners = ctx.interaction.options.getInteger("winners", true)
         const attachment = ctx.interaction.options.getAttachment("prize_file", true)
         let prizes = await request(attachment.url, "GET").send().then(res => {
