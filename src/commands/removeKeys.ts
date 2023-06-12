@@ -30,6 +30,6 @@ export default class Test extends Command {
         ctx.reply({content: `You removed ${keys.rowCount} pending keys from giveaway ${id}`, files: [file]})
         const giveaway = await ctx.sql.query("SELECT * FROM giveaways WHERE id=$1", [id]).then(res => res.rows[0]).catch(console.error)
 
-        ctx.client.log(`${ctx.interaction.user.tag} (\`${ctx.interaction.user.id}\`) deleted the ${keys.rowCount} pending prizes for the giveaway "${giveaway.name}" \`${id}\``, [file], [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}`}]}])
+        ctx.client.log(`${ctx.interaction.user.username} (\`${ctx.interaction.user.id}\`) deleted the ${keys.rowCount} pending prizes for the giveaway "${giveaway.name}" \`${id}\``, [file], [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}`}]}])
     }
 }

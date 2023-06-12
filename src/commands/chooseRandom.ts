@@ -36,7 +36,7 @@ export default class Test extends Command {
             users = randomizeArray(users);
             let winners = users.splice(0, 1)
             const user = await ctx.client.users.fetch(winners[0])
-            ctx.reply({content: `Random user that has not won or accepting is pending the giveaway ${user.tag} (\`${winners[0]}\`)`})
+            ctx.reply({content: `Random user that has not won or accepting is pending the giveaway ${user.username} (\`${winners[0]}\`)`})
         }
     }
 }

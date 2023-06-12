@@ -17,7 +17,7 @@ export default class Test extends Button {
 
         const giveaway = await ctx.sql.query("SELECT * FROM giveaways WHERE id=$1", [ctx.customId.split("_")[1]]).then(res => res.rows[0]).catch(console.error)
         ctx.update({content: `Here's your prize: ${prize.rows[0].prize}`, components: [], embeds: []})
-        ctx.log(`${ctx.interaction.user.tag} (\`${ctx.interaction.user.id}\`) received prize \`${prize.rows[0].prize}\` from giveaway "${giveaway.name || giveaway.id}" \`${giveaway.id}\``, [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}`}]}])
+        ctx.log(`${ctx.interaction.user.username} (\`${ctx.interaction.user.id}\`) received prize \`${prize.rows[0].prize}\` from giveaway "${giveaway.name || giveaway.id}" \`${giveaway.id}\``, [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}`}]}])
         await ctx.sql.query("UPDATE giveaways SET won_users=ARRAY_APPEND(ARRAY_REMOVE(won_users, $1), $1) WHERE id=$2", [ctx.interaction.user.id, prize.rows[0].id])
         const keys = await ctx.sql.query(`SELECT * FROM prizes WHERE id=$1`, [ctx.customId.split("_")[1]])
         if(!keys.rows.length) ctx.client.log(`Giveaway "${giveaway.name}" \`${giveaway.id}\` ended all keys have been handed out`)

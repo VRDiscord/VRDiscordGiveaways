@@ -37,6 +37,6 @@ export default class Test extends Command {
         const giveaway = await ctx.sql.query("SELECT * FROM giveaways WHERE id=$1", [id]).then(res => res.rows[0]).catch(console.error)
 
         ctx.reply({content: `Removed the user <@${user.id}> (\`${user.id}\`) from the giveaway "${giveaway.name}" \`${id}\``, components: [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}`}]}]})
-        ctx.log(`${ctx.interaction.user.tag} removed the participant <@${user.id}> (\`${user.id}\`) from the giveaway "${giveaway.name}" \`${id}\``, [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}`}]}])
+        ctx.log(`${ctx.interaction.user.username} removed the participant <@${user.id}> (\`${user.id}\`) from the giveaway "${giveaway.name}" \`${id}\``, [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${giveaway.channel_id}/${giveaway.id}`}]}])
     }
 }

@@ -37,6 +37,6 @@ export default class Test extends Command {
             message?.delete().catch()
         }
 
-        ctx.client.log(`${ctx.interaction.user.tag} deleted the giveaway "${res.rows[0].name}" \`${id}\` with ${res.rows[0].users.length} entries`, file ? [file] : undefined, [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${res.rows[0].channel_id}/${res.rows[0].id}`}]}])
+        ctx.client.log(`${ctx.interaction.user.username} deleted the giveaway "${res.rows[0].name}" \`${id}\` with ${res.rows[0].users.length} entries`, file ? [file] : undefined, [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${res.rows[0].channel_id}/${res.rows[0].id}`}]}])
     }
 }

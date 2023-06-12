@@ -52,7 +52,7 @@ export default class Test extends Command {
             let q = `DELETE FROM prizes WHERE user_id=$1 AND id=$2 RETURNING *`
             let left_over = await ctx.sql.query(q, [user.id, id])
             
-            ctx.log(`${ctx.interaction.user.tag} (\`${user.id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
+            ctx.log(`${ctx.interaction.user.username} (\`${user.id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
             //give log not given away key
             ctx.editReply({embeds: [], components: [], content: `Unable to find any further winners`})
         } else {
@@ -100,7 +100,7 @@ export default class Test extends Command {
                 let q = `DELETE FROM prizes WHERE user_id IN (${dms_closed.map((_, i) => `$${i+2}`).join(", ")}) AND id=$1 RETURNING *`
                 let left_over = await ctx.sql.query(q, [id, ...dms_closed])
                 ctx.editReply({embeds: [], components: [], content: `Unable to find any further winners`})
-                ctx.log(`${ctx.interaction.user.tag} (\`${user.id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
+                ctx.log(`${ctx.interaction.user.username} (\`${user.id}\`) denied their prize (\`${left_over.rows[0].prize}\`) and no further winners could be determined.\n**GiveawayID** \`${id}\``)
             } else {
                 ctx.editReply({embeds: [], components: [], content: `Rerolled prize`})
             }

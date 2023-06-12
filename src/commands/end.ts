@@ -31,6 +31,6 @@ export default class Test extends Command {
         await syncDB(ctx.sql, ctx.client)
         await determineWinner(ctx.sql, ctx.client)
 
-        ctx.log(`${ctx.interaction.user.tag} ended the giveaway "${updated.rows[0].name}" \`${id}\``, [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${updated.rows[0].channel_id}/${updated.rows[0].id}`}]}])
+        ctx.log(`${ctx.interaction.user.username} ended the giveaway "${updated.rows[0].name}" \`${id}\``, [{type: 1, components: [{type: 2, label: "View Message", style: 5, url: `https://discord.com/channels/${process.env["GUILD_ID"]}/${updated.rows[0].channel_id}/${updated.rows[0].id}`}]}])
     }
 }
