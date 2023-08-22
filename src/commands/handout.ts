@@ -17,6 +17,11 @@ const commandData: ApplicationCommandData = {
         name: "prize_attachment",
         description: "The file with the keys",
         required: true
+    },{
+        type: ApplicationCommandOptionType.String,
+        name: "title",
+        description: "The title of the handout",
+        required: false
     }]
 }
 
@@ -31,6 +36,7 @@ export default class Test extends Command {
     async run(ctx: CommandContext): Promise<any> {
         const attachment = ctx.interaction.options.getAttachment("prize_attachment", true)
         const description = ctx.interaction.options.getString("description", true)
+        const title = ctx.interaction.options.getString("title")
         let prizes = await request(attachment.url, "GET").send().then(res => {
             if(res.statusCode !== 200) return []
             return res.body.toString().split("\n").map(k => k.replace("\r", "")).filter(v => v)
@@ -39,7 +45,7 @@ export default class Test extends Command {
 
         let embed = new EmbedBuilder()
         .setColor(Colors.Aqua)
-        .setTitle("New Handout")
+        .setTitle(title || "New Handout")
         .setDescription(`${description}\n\nClick the button below to receive a key.`)
 
         let components = [{
