@@ -24,21 +24,7 @@ const token = process.env["DISCORD_TOKEN"]
 
 const client = new GiveawayClient({
     intents: new IntentsBitField([
-        "DirectMessages",
-        "DirectMessageReactions",
-        "DirectMessageTyping",
-        "Guilds", "GuildBans",
-        "GuildEmojisAndStickers",
-        "GuildIntegrations",
-        "GuildInvites",
-        "GuildMembers",
-        "GuildMessages",
-        "GuildMessageReactions",
-        "GuildMessageTyping",
-        "GuildPresences",
-        "GuildScheduledEvents",
-        "GuildVoiceStates",
-        "GuildWebhooks"
+        "Guilds"
 ])})
 
 
@@ -64,9 +50,6 @@ readdirSync("./dist/buttons")
     client.buttons.set(cmd.name, cmd)
 })
 
-client.login(token)
-connection.connect().catch(console.error)
-
 const keepAlive = async () => {
     //await connection.query("SELECT * FROM giveaways LIMIT 1").then(console.log).catch(() => null)
     //let res = await connection.query("DROP TABLE giveaways")
@@ -77,15 +60,19 @@ const keepAlive = async () => {
     await connection.query("CREATE TABLE IF NOT EXISTS freekeys (index SERIAL, id varchar(21) not null, prize varchar(255) not null, user_id varchar(21), channel_id varchar(21) not null)")
 }
 
-keepAlive()
-
 const giveawayController = async () => {
     await syncDB(connection, client)
     await determineWinner(connection, client)
     await rerollPrizes(connection, client)
 }
 
-giveawayController()
+client.login(token)
+
+connection.connect()
+.then(async () => await keepAlive())
+.then(async () => giveawayController())
+.catch(console.error)
+
 setInterval( giveawayController, 1000*60 )
 
 
@@ -118,6 +105,6 @@ client.on("interactionCreate", async (interaction): Promise<any> => {
 })
 
 .on("ready", async () => {
-    console.log(`Bot is ready`)
+    console.log(`Bot is ready - Logged in as ${client.user?.username}`)
     await client.application?.commands.set(client.commands.map(c => c.command), process.env["GUILD_ID"]!).catch(console.error)
 })
