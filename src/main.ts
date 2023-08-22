@@ -15,7 +15,7 @@ if (existsSync(`${process.cwd()}/.env`))
         let [, key, value] = line.match(RE_INI_KEY_VAL) || []
         if (!key) continue
 
-        process.env[key] = value?.trim() || 'true'
+        process.env[key] = value?.trim() || ''
 }
 
 

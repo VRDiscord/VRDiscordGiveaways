@@ -19,6 +19,7 @@ export class GiveawayClient extends Client{
     }
 
     async log(message: string | EmbedBuilder | EmbedBuilder[], files?: AttachmentBuilder[], components?: ActionRowData<MessageActionRowComponentData>[]): Promise<Message | null> {
+        if(!process.env["GUILD_ID"] || !process.env["LOG_CHANNEL_ID"]) return null;
         let guild = await this.guilds.fetch(process.env["GUILD_ID"]!)
         return await guild.channels.fetch(process.env["LOG_CHANNEL_ID"]!).then(async c => {
             if(c?.isTextBased()) {
